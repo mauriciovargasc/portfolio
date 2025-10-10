@@ -1,6 +1,6 @@
 ## Portfolio
 
-["Click Here"](https://mauriciovargasc.github.io/portfolio) 
+https://mauriciovargasc.github.io/portfolio
 
 # Portfolio Website - Augustine
 
@@ -57,4 +57,5 @@ I've used the following resources in the website:
 - [PhotoSwipe](https://photoswipe.com/)
 
 ==================================================================================================
+
 
