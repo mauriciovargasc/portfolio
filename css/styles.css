@@ -4342,9 +4342,8 @@ html {
  * compositing group and show up as scroll jank on low-end hardware.
  * Plain alpha over a grey speckle tile gets the same look for free.
  *
- * Sits above the page but below the preloader (500) and PhotoSwipe
- * (1500) so the texture reads across photographs too, the way ink and
- * paper share a surface in print.
+ * Sits above the page but below the preloader (500) so the texture reads
+ * across photographs too, the way ink and paper share a surface in print.
  * ------------------------------------------------------------------- */
 .s-pagewrap::before {
     content        : "";
