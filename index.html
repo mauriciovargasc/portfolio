@@ -6,12 +6,85 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mauricio</title>
 
+    <!-- theme bootstrap — must run before first paint to avoid a flash
+    ================================================== -->
     <script>
-        document.documentElement.classList.remove('no-js');
-        document.documentElement.classList.add('js');
+    (function () {
+        var KEY  = 'mv-theme';
+        var root = document.documentElement;
+        var mql  = window.matchMedia('(prefers-color-scheme: dark)');
+        var stored = null;
+
+        try { stored = localStorage.getItem(KEY); } catch (e) {}
+
+        var theme = (stored === 'light' || stored === 'dark')
+            ? stored
+            : (mql.matches ? 'dark' : 'light');
+
+        root.setAttribute('data-theme', theme);
+        root.classList.remove('no-js');
+        root.classList.add('js');
+
+        /* follow the OS only while the visitor hasn't chosen explicitly */
+        mql.addEventListener('change', function (e) {
+            var s = null;
+            try { s = localStorage.getItem(KEY); } catch (err) {}
+            if (!s) root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        });
+
+        window.__ssTheme = {
+            key : KEY,
+            current : function () { return root.getAttribute('data-theme'); },
+            set : function (next) {
+                root.classList.add('ss-theme-switching');
+                root.setAttribute('data-theme', next);
+                try { localStorage.setItem(KEY, next); } catch (e) {}
+
+                var m = document.querySelector('meta[name="theme-color"]');
+                if (m) {
+                    m.setAttribute('content',
+                        getComputedStyle(root).getPropertyValue('--color-paper').trim());
+                }
+
+                var btn = document.querySelector('.theme-toggle');
+                if (btn) btn.setAttribute('aria-pressed', String(next === 'dark'));
+
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        root.classList.remove('ss-theme-switching');
+                    });
+                });
+            }
+        };
+    })();
     </script>
+
+    <!-- seo
+    ================================================== -->
+    <title>Mauricio Vargas — Data Science, BI &amp; AI Automation</title>
+    <meta name="description" content="Mauricio Vargas builds LLM-powered document processing pipelines, MCP servers, and automated data pipelines for a multi-entity private equity portfolio. BS in Business Analytics, Carnegie Mellon.">
+    <meta name="author" content="Mauricio Vargas">
+    <link rel="canonical" href="https://mauriciovargasc.github.io/portfolio/">
+    <meta name="theme-color" content="#CFE6E8">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mauriciovargasc.github.io/portfolio/">
+    <meta property="og:title" content="Mauricio Vargas — Data Science, BI &amp; AI Automation">
+    <meta property="og:description" content="Building LLM-powered document processing, MCP servers, and automated data pipelines for a multi-entity private equity portfolio.">
+    <meta property="og:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg.jpeg">
+    <meta property="og:image:alt" content="Mauricio Vargas">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mauricio Vargas — Data Science, BI &amp; AI Automation">
+    <meta name="twitter:description" content="Building LLM-powered document processing, MCP servers, and automated data pipelines for a multi-entity private equity portfolio.">
+    <meta name="twitter:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg.jpeg">
+
+    <!-- fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Castoro:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap">
 
     <!-- CSS
     ================================================== -->
@@ -20,10 +93,33 @@
 
     <!-- favicons
     ================================================== -->
-    <link rel="apple-touch-icon" sizes="180x180" href="micon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="MIcon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="MIcon.png">
+    <link rel="apple-touch-icon" href="micon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- structured data
+    ================================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Mauricio Vargas",
+      "url": "https://mauriciovargasc.github.io/portfolio/",
+      "email": "mauriciovargascolon@gmail.com",
+      "jobTitle": "Procurement Analyst",
+      "worksFor": { "@type": "Organization", "name": "SNH Strategic Partners" },
+      "address": { "@type": "PostalAddress", "addressLocality": "Bayamón", "addressRegion": "PR", "addressCountry": "US" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "Carnegie Mellon University" },
+      "knowsAbout": ["Data Science", "Business Intelligence", "AI Automation", "Python", "SQL", "Power BI", "Model Context Protocol"],
+      "sameAs": [
+        "https://www.linkedin.com/in/mauriciovargascolon/",
+        "https://github.com/mauriciovargasc",
+        "https://public.tableau.com/app/profile/mauricio.vargas7357/vizzes"
+      ]
+    }
+    </script>
 
 </head>
 

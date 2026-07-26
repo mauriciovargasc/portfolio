@@ -73,7 +73,10 @@
 /* ------------------------------------------------------------------- 
  * ## fonts 
  * ------------------------------------------------------------------- */
-@import url("https://fonts.googleapis.com/css2?family=Castoro:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap");
+/* Fonts are loaded from index.html <head> via preconnect + <link>.
+ * An @import here is invisible to the browser's preload scanner and
+ * serialises the font request behind this stylesheet's download+parse.
+ */
 
 :root {
     --font-1    : "Inter", sans-serif;
@@ -2703,7 +2706,10 @@ td:last-child {
     line-height : calc(0.9375 * var(--space));
 }
 
-[data-animate-el] {
+/* gated on .js — without JS (or if plugins.js fails to load) these
+ * elements must stay visible rather than being permanently hidden.
+ */
+.js [data-animate-el] {
     opacity : 0;
 }
 
@@ -4170,5 +4176,93 @@ img.u-pull-left {
     .ss-go-top svg {
         height : 1.6rem;
         width  : 1.6rem;
+    }
+}
+
+
+/* ===================================================================
+ * # modern behaviour layer
+ *
+ * Appended last on purpose: several rules here intentionally override
+ * earlier declarations (notably `outline: 0` at the .btn/button focus
+ * rule) and rely on source order to win at equal specificity.
+ *
+ * ------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------
+ * ## smooth scrolling
+ * ------------------------------------------------------------------- */
+html {
+    scroll-behavior : smooth;
+}
+
+/* keep the sticky header from covering the top of an anchored section.
+ * --header-height is declared on .s-pagewrap; the fallback covers #top.
+ */
+#intro,
+#about,
+#works,
+#colophon {
+    scroll-margin-top : calc(var(--header-height, 10rem) + 2rem);
+}
+
+/* -------------------------------------------------------------------
+ * ## focus visibility
+ * ------------------------------------------------------------------- */
+:where(a, button, [tabindex]):focus-visible {
+    outline        : 2px solid var(--color-1);
+    outline-offset : 3px;
+}
+
+:where(a, button):focus:not(:focus-visible) {
+    outline : none;
+}
+
+/* -------------------------------------------------------------------
+ * ## preloader
+ * ------------------------------------------------------------------- */
+.ss-preload {
+    overflow : hidden;
+}
+
+/* -------------------------------------------------------------------
+ * ## theme switching
+ *
+ * The template applies `transition: all .3s` to ~40 selectors. Without
+ * this, flipping the theme cross-fades every element independently and
+ * reads as a smear. Applied for one frame around the swap.
+ * ------------------------------------------------------------------- */
+.ss-theme-switching,
+.ss-theme-switching *,
+.ss-theme-switching *::before,
+.ss-theme-switching *::after {
+    transition : none !important;
+}
+
+/* -------------------------------------------------------------------
+ * ## reduced motion
+ * ------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior : auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration        : .01ms !important;
+        animation-iteration-count : 1     !important;
+        transition-duration       : .01ms !important;
+        scroll-behavior           : auto  !important;
+    }
+
+    /* JS reveals are opacity-gated — make sure content is never
+     * left invisible when the animations are suppressed.
+     */
+    .js [data-animate-el],
+    .animate-on-load {
+        opacity   : 1    !important;
+        transform : none !important;
     }
 }
