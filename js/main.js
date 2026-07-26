@@ -24,27 +24,34 @@
      * loaded. This runs at module scope, so a throw here would take the
      * whole file down and leave the overlay up for good.
      */
+    /* The plate used to get its own step AND be part of the
+     * .animate-on-load group, so it faded in over 800-1800ms, sat there
+     * for a beat, then snapped back to opacity 0 and slid in a second
+     * time at 3000ms. That was the stutter. It now comes in once, with
+     * the group, after the name - which is the right reading order for
+     * a masthead anyway.
+     *
+     * Retimed from 4.6s to ~1.5s. A 400ms stagger over six elements
+     * reads as content trickling in rather than a page arriving, and
+     * easeOut suits an entrance better than easeInOut.
+     */
     const tl = (typeof anime === 'function') ? anime.timeline( {
-        easing: 'easeInOutCubic',
-        duration: 800,
+        easing: 'easeOutCubic',
+        duration: 700,
         autoplay: false
     })
     .add({
         targets: '.s-header',
-        translateY: [-100, 0],
-        opacity: [0, 1]
+        translateY: [-24, 0],
+        opacity: [0, 1],
+        duration: 500
     })
     .add({
-        targets: '.s-intro__plate',
+        targets: '.animate-on-load',
+        translateY: [24, 0],
         opacity: [0, 1],
-        duration: 1000,
-    })
-    .add({
-        targets: ['.animate-on-load'],
-        translateY: [100, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(400)
-    }) : null;
+        delay: anime.stagger(110)
+    }, '-=250') : null;
 
 
 
@@ -105,7 +112,7 @@
             // the CSS hides the header until the timeline runs, an anime
             // that loads but never ticks would leave it invisible with no
             // second chance, since done() is idempotent. The timeline runs
-            // ~4.6s; well past that, still hidden means it never ran.
+            // ~1.5s; well past that, still hidden means it never ran.
             setTimeout(function() {
                 const header = document.querySelector('.s-header');
                 if (header && getComputedStyle(header).opacity === '0') revealIntro();
