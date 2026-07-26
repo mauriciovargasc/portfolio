@@ -1866,6 +1866,17 @@ img,
     width           : 100%;
     opacity         : 1;
     overflow        : hidden;
+    transition      : opacity .4s ease-out, visibility 0s linear .4s;
+}
+
+/* Teardown is driven by this class alone, never by the JS animation
+ * library. If anything stops the intro timeline from running, the
+ * overlay must still come down rather than covering the whole page.
+ */
+.ss-loaded #preloader {
+    opacity        : 0;
+    visibility     : hidden;
+    pointer-events : none;
 }
 
 .no-js #preloader {
