@@ -9,36 +9,29 @@
     'use strict';
 
 
-    /* animations
+   /* motion preference
     * -------------------------------------------------- */
+    const SS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+
+   /* animations
+    * -------------------------------------------------- */
+    /* The preloader is deliberately NOT animated here. Its teardown is
+     * driven by the .ss-loaded class in CSS so that a failure in this
+     * library can never leave the overlay covering the page.
+     */
     const tl = anime.timeline( {
         easing: 'easeInOutCubic',
         duration: 800,
         autoplay: false
     })
     .add({
-        targets: '#loader',
-        opacity: 0,
-        duration: 1000,
-        begin: function(anim) {
-            window.scrollTo(0, 0);
-        }
-    })
-    .add({
-        targets: '#preloader',
-        opacity: 0,
-        complete: function(anim) {
-            document.querySelector("#preloader").style.visibility = "hidden";
-            document.querySelector("#preloader").style.display = "none";
-        }
-    })
-    .add({
         targets: '.s-header',
         translateY: [-100, 0],
         opacity: [0, 1]
-    }, '-=200')
+    })
     .add({
-        targets: '.s-intro__bg',
+        targets: '.s-intro__plate',
         opacity: [0, 1],
         duration: 1000,
     })
@@ -52,6 +45,11 @@
 
 
    /* preloader
+    *
+    * Deliberately NOT gated on window 'load'. That event waits for every
+    * subresource, so the overlay used to sit there until the multi-MB
+    * intro photo had finished downloading. Wait on the hero only, cap it,
+    * and keep 'load' as an idempotent failsafe.
     * -------------------------------------------------- */
     const ssPreloader = function() {
 
@@ -59,19 +57,93 @@
         if (!preloader) return;
 
         html.classList.add('ss-preload');
-        
-        window.addEventListener('load', function() {
+
+        let finished = false;
+
+        function revealIntro() {
+            document.querySelectorAll('.animate-on-load').forEach(function(el) {
+                el.style.opacity = 1;
+                el.style.transform = 'none';
+            });
+        }
+
+        function done() {
+
+            if (finished) return;
+            finished = true;
+
+            window.scrollTo(0, 0);
+
+            // CSS takes the overlay down from here - see .ss-loaded #preloader
             html.classList.remove('ss-preload');
             html.classList.add('ss-loaded');
-            tl.play();
-        });
+
+            // reduced motion: reveal instantly, skip the timeline entirely
+            if (SS_REDUCED.matches) {
+                revealIntro();
+                return;
+            }
+
+            // anime.js drives the decorative intro only. If it fails, the
+            // content must still end up visible rather than stuck at the
+            // opacity:0 the timeline sets on its first tick.
+            try {
+                tl.play();
+            } catch (e) {
+                revealIntro();
+            }
+        }
+
+        // wait on the LCP hero if there is a real <img> for it
+        const hero = document.querySelector('.s-intro__plate img');
+        let heroReady;
+
+        if (!hero || hero.complete) {
+            heroReady = Promise.resolve();
+        } else if (typeof hero.decode === 'function') {
+            heroReady = hero.decode().catch(function() {});
+        } else {
+            heroReady = new Promise(function(resolve) {
+                hero.addEventListener('load', resolve, { once: true });
+                hero.addEventListener('error', resolve, { once: true });
+            });
+        }
+
+        Promise.race([
+            heroReady,
+            new Promise(function(resolve) { setTimeout(resolve, 1200); })
+        ]).then(done);
+
+        window.addEventListener('load', done);   // failsafe only
 
     }; // end ssPreloader
 
 
 
+   /* theme toggle
+    *
+    * The theme itself is applied by an inline script in <head> so it is
+    * set before first paint. This only wires the button to that API.
+    * ---------------------------------------------------- */
+    const ssThemeToggle = function() {
+
+        const btn = document.querySelector('.theme-toggle');
+        if (!btn || !window.__ssTheme) return;
+
+        btn.setAttribute('aria-pressed', String(window.__ssTheme.current() === 'dark'));
+
+        btn.addEventListener('click', function() {
+            window.__ssTheme.set(
+                window.__ssTheme.current() === 'dark' ? 'light' : 'dark'
+            );
+        });
+
+    }; // end ssThemeToggle
+
+
+
    /* mobile menu
-    * ---------------------------------------------------- */ 
+    * ---------------------------------------------------- */
     const ssMobileMenu = function() {
 
         const toggleButton = document.querySelector('.s-header__menu-toggle');
@@ -111,138 +183,104 @@
 
 
 
-   /* sticky header
+   /* scroll state - sticky header + back-to-top
+    *
+    * Replaces two separate unthrottled listeners. Reads only scrollY
+    * (no layout), coalesced into one rAF, and registered passive so it
+    * never blocks scrolling.
     * ------------------------------------------------------ */
-    const ssStickyHeader = function() {
+    const ssScrollState = function() {
 
         const hdr = document.querySelector('.s-header');
-        if (!hdr) return;
+        const goTopButton = document.querySelector('.ss-go-top');
+        const pxShow = 900;
 
-        // const triggerHeight = window.pageYOffset + hdr.getBoundingClientRect().top;
-        const triggerHeight = 1;
+        if (!(hdr || goTopButton)) return;
 
-        window.addEventListener('scroll', function () {
+        let ticking = false;
 
-            let loc = window.scrollY;
+        function apply() {
+            const loc = window.scrollY;
+            if (hdr) hdr.classList.toggle('sticky', loc > 1);
+            if (goTopButton) goTopButton.classList.toggle('link-is-visible', loc >= pxShow);
+            ticking = false;
+        }
 
-            if (loc > triggerHeight) {
-                hdr.classList.add('sticky');
-            } else {
-                hdr.classList.remove('sticky');
+        apply();   // set initial state (e.g. reload part-way down the page)
+
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                ticking = true;
+                window.requestAnimationFrame(apply);
             }
+        }, { passive: true });
 
-        });
-
-    }; // end ssStickyHeader
-
-
-
-   /* photoswipe
-    * ----------------------------------------------------- */
-    const ssPhotoswipe = function() {
-
-        const items = [];
-        const pswp = document.querySelectorAll('.pswp')[0];
-        const folioItems = document.querySelectorAll('.folio-item');
-
-        if (!(pswp && folioItems)) return;
-
-        folioItems.forEach(function(folioItem) {
-
-            let folio = folioItem;
-            let thumbLink = folio.querySelector('.folio-item__thumb-link');
-            let title = folio.querySelector('.folio-item__title');
-            let caption = folio.querySelector('.folio-item__caption');
-            let titleText = '<h4>' + title.innerHTML + '</h4>';
-            let captionText = caption.innerHTML;
-            let href = thumbLink.getAttribute('href');
-            let size = thumbLink.dataset.size.split('x'); 
-            let width  = size[0];
-            let height = size[1];
-
-            let item = {
-                src  : href,
-                w    : width,
-                h    : height
-            }
-
-            if (caption) {
-                item.title = titleText.trim() + captionText.trim();
-            }
-
-            items.push(item);
-
-        });
-
-        // bind click event
-        folioItems.forEach(function(folioItem, i) {
-
-            let thumbLink = folioItem.querySelector('.folio-item__thumb-link');
-
-            thumbLink.addEventListener('click', function(e) {
-
-                e.preventDefault();
-
-                let options = {
-                    index: i,
-                    showHideOpacity: true
-                }
-
-                // initialize PhotoSwipe
-                let lightBox = new PhotoSwipe(pswp, PhotoSwipeUI_Default, items, options);
-                lightBox.init();
-            });
-
-        });
-
-    };  // end ssPhotoSwipe
+    }; // end ssScrollState
 
 
 
    /* animate elements if in viewport
+    *
+    * IntersectionObserver instead of a scroll handler that recomputed
+    * offsetTop/offsetHeight for every block on every event. Each block
+    * is unobserved once revealed, so the cost after first paint is zero.
     * ------------------------------------------------------ */
     const ssAnimateOnScroll = function() {
 
         const blocks = document.querySelectorAll('[data-animate-block]');
+        if (!blocks.length) return;
 
-        window.addEventListener('scroll', animateOnScroll);
-
-        function animateOnScroll() {
-
-            let scrollY = window.pageYOffset;
-
-            blocks.forEach(function(current) {
-
-                const viewportHeight = window.innerHeight;
-                const triggerTop = (current.offsetTop + (viewportHeight * .1)) - viewportHeight;
-                const blockHeight = current.offsetHeight;
-                const blockSpace = triggerTop + blockHeight;
-                const inView = scrollY > triggerTop && scrollY <= blockSpace;
-                const isAnimated = current.classList.contains('ss-animated');
-
-                if (inView && (!isAnimated)) {
-
-                    anime({
-                        targets: current.querySelectorAll('[data-animate-el]'),
-                        opacity: [0, 1],
-                        translateY: [100, 0],
-                        delay: anime.stagger(200, {start: 200}),
-                        duration: 600,
-                        easing: 'easeInOutCubic',
-                        begin: function(anim) {
-                            current.classList.add('ss-animated');
-                        }
-                    });
-                }
+        function revealNow(block) {
+            block.classList.add('ss-animated');
+            block.querySelectorAll('[data-animate-el]').forEach(function(el) {
+                el.style.opacity = 1;
             });
         }
+
+        // no animation wanted, or no observer available: just show it
+        if (SS_REDUCED.matches || !('IntersectionObserver' in window)) {
+            blocks.forEach(revealNow);
+            return;
+        }
+
+        const observer = new IntersectionObserver(function(entries, obs) {
+
+            entries.forEach(function(entry) {
+
+                if (!entry.isIntersecting) return;
+
+                const block = entry.target;
+                obs.unobserve(block);
+
+                // set the flag here rather than in an anime callback so a
+                // failure inside anime can't leave the block half-hidden
+                block.classList.add('ss-animated');
+
+                anime({
+                    targets: block.querySelectorAll('[data-animate-el]'),
+                    opacity: [0, 1],
+                    translateY: [40, 0],
+                    delay: anime.stagger(110, {start: 60}),
+                    duration: 700,
+                    easing: 'cubicBezier(0.215, 0.61, 0.355, 1)'
+                });
+            });
+
+        }, {
+            rootMargin: '0px 0px -12% 0px',
+            threshold: 0
+        });
+
+        blocks.forEach(function(block) {
+            observer.observe(block);
+        });
 
     }; // end ssAnimateOnScroll
 
 
 
    /* swiper
-    * ------------------------------------------------------ */ 
+    * ------------------------------------------------------ */
     const ssSwiper = function() {
 
         const mySwiper = new Swiper('.swiper', {
@@ -251,7 +289,7 @@
             effect: 'slide',
             spaceBetween: 160,
             centeredSlides: true,
-            speed: 1000,
+            speed: SS_REDUCED.matches ? 0 : 900,
             navigation: {
                 nextEl: ".testimonial-slider__next",
                 prevEl: ".testimonial-slider__prev",
@@ -272,7 +310,7 @@
     const ssAlertBoxes = function() {
 
         const boxes = document.querySelectorAll('.alert-box');
-  
+
         boxes.forEach(function(box){
 
             box.addEventListener('click', function(e) {
@@ -291,87 +329,20 @@
 
 
 
-    /* back to top
-    * ------------------------------------------------------ */
-    const ssBackToTop = function() {
-
-        const pxShow = 900;
-        const goTopButton = document.querySelector(".ss-go-top");
-
-        if (!goTopButton) return;
-
-        // Show or hide the button
-        if (window.scrollY >= pxShow) goTopButton.classList.add("link-is-visible");
-
-        window.addEventListener('scroll', function() {
-            if (window.scrollY >= pxShow) {
-                if(!goTopButton.classList.contains('link-is-visible')) goTopButton.classList.add("link-is-visible")
-            } else {
-                goTopButton.classList.remove("link-is-visible")
-            }
-        });
-
-    }; // end ssBackToTop
-
-
-
-   /* smoothscroll
-    * ------------------------------------------------------ */
-    const ssMoveTo = function(){
-
-        const easeFunctions = {
-            easeInQuad: function (t, b, c, d) {
-                t /= d;
-                return c * t * t + b;
-            },
-            easeOutQuad: function (t, b, c, d) {
-                t /= d;
-                return -c * t* (t - 2) + b;
-            },
-            easeInOutQuad: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2*t*t + b;
-                t--;
-                return -c/2 * (t*(t-2) - 1) + b;
-            },
-            easeInOutCubic: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2*t*t*t + b;
-                t -= 2;
-                return c/2*(t*t*t + 2) + b;
-            }
-        }
-
-        const triggers = document.querySelectorAll('.smoothscroll');
-        
-        const moveTo = new MoveTo({
-            tolerance: 0,
-            duration: 1200,
-            easing: 'easeInOutCubic',
-            container: window
-        }, easeFunctions);
-
-        triggers.forEach(function(trigger) {
-            moveTo.registerTrigger(trigger);
-        });
-
-    }; // end ssMoveTo
-
-
-
    /* initialize
+    *
+    * Smooth scrolling is now CSS (`scroll-behavior`), which honours
+    * prefers-reduced-motion for free - the MoveTo dependency is gone.
     * ------------------------------------------------------ */
     (function ssInit() {
 
+        ssThemeToggle();
         ssPreloader();
         ssMobileMenu();
-        ssStickyHeader();
-        ssPhotoswipe();
+        ssScrollState();
         ssAnimateOnScroll();
         ssSwiper();
         ssAlertBoxes();
-        ssBackToTop();
-        ssMoveTo();
 
     })();
 

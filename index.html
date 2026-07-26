@@ -6,12 +6,87 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mauricio</title>
 
+    <!-- theme bootstrap - must run before first paint to avoid a flash
+    ================================================== -->
     <script>
-        document.documentElement.classList.remove('no-js');
-        document.documentElement.classList.add('js');
+    (function () {
+        var KEY  = 'mv-theme';
+        var root = document.documentElement;
+        var mql  = window.matchMedia('(prefers-color-scheme: dark)');
+        var stored = null;
+
+        try { stored = localStorage.getItem(KEY); } catch (e) {}
+
+        var theme = (stored === 'light' || stored === 'dark')
+            ? stored
+            : (mql.matches ? 'dark' : 'light');
+
+        root.setAttribute('data-theme', theme);
+        root.classList.remove('no-js');
+        root.classList.add('js');
+
+        /* follow the OS only while the visitor hasn't chosen explicitly */
+        mql.addEventListener('change', function (e) {
+            var s = null;
+            try { s = localStorage.getItem(KEY); } catch (err) {}
+            if (!s) root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        });
+
+        window.__ssTheme = {
+            key : KEY,
+            current : function () { return root.getAttribute('data-theme'); },
+            set : function (next) {
+                root.classList.add('ss-theme-switching');
+                root.setAttribute('data-theme', next);
+                try { localStorage.setItem(KEY, next); } catch (e) {}
+
+                var m = document.querySelector('meta[name="theme-color"]');
+                if (m) {
+                    m.setAttribute('content',
+                        getComputedStyle(root).getPropertyValue('--color-paper').trim());
+                }
+
+                var btn = document.querySelector('.theme-toggle');
+                if (btn) btn.setAttribute('aria-pressed', String(next === 'dark'));
+
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        root.classList.remove('ss-theme-switching');
+                    });
+                });
+            }
+        };
+    })();
     </script>
+
+    <!-- seo
+    ================================================== -->
+    <title>Mauricio Vargas | Data Science, BI &amp; AI Automation</title>
+    <meta name="description" content="Mauricio Vargas builds LLM-powered document processing pipelines, MCP servers, and automated data pipelines for a multi-entity private equity portfolio. BS in Business Analytics, Carnegie Mellon.">
+    <meta name="author" content="Mauricio Vargas">
+    <link rel="canonical" href="https://mauriciovargasc.github.io/portfolio/">
+    <meta name="theme-color" content="#F3EDE1">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mauriciovargasc.github.io/portfolio/">
+    <meta property="og:title" content="Mauricio Vargas | Data Science, BI &amp; AI Automation">
+    <meta property="og:description" content="Building LLM-powered document processing, MCP servers, and automated data pipelines for a multi-entity private equity portfolio.">
+    <meta property="og:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg-900.jpg">
+    <meta property="og:image:width" content="900">
+    <meta property="og:image:height" content="1200">
+    <meta property="og:image:alt" content="Mauricio Vargas">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mauricio Vargas | Data Science, BI &amp; AI Automation">
+    <meta name="twitter:description" content="Building LLM-powered document processing, MCP servers, and automated data pipelines for a multi-entity private equity portfolio.">
+    <meta name="twitter:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg-900.jpg">
+
+    <!-- fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Libre+Franklin:wght@300..600&display=swap">
 
     <!-- CSS
     ================================================== -->
@@ -20,10 +95,33 @@
 
     <!-- favicons
     ================================================== -->
-    <link rel="apple-touch-icon" sizes="180x180" href="micon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="MIcon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="MIcon.png">
+    <link rel="apple-touch-icon" href="micon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- structured data
+    ================================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Mauricio Vargas",
+      "url": "https://mauriciovargasc.github.io/portfolio/",
+      "email": "mauriciovargascolon@gmail.com",
+      "jobTitle": "Procurement Analyst",
+      "worksFor": { "@type": "Organization", "name": "SNH Strategic Partners" },
+      "address": { "@type": "PostalAddress", "addressLocality": "Bayamón", "addressRegion": "PR", "addressCountry": "US" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "Carnegie Mellon University" },
+      "knowsAbout": ["Data Science", "Business Intelligence", "AI Automation", "Python", "SQL", "Power BI", "Model Context Protocol"],
+      "sameAs": [
+        "https://www.linkedin.com/in/mauriciovargascolon/",
+        "https://github.com/mauriciovargasc",
+        "https://public.tableau.com/app/profile/mauricio.vargas7357/vizzes"
+      ]
+    }
+    </script>
 
 </head>
 
@@ -53,6 +151,22 @@
                         <a href="index.html" rel="home">Mauricio.</a>
                     </p>
                 </div>
+
+                <!-- Lives in __block, not __social: below 900px the social
+                     list sits inside __nav-wrap, which is scaleY(0) and
+                     visibility:hidden until the hamburger is opened, so a
+                     toggle there would be unreachable on mobile. -->
+                <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark mode">
+                    <svg class="theme-toggle__sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="4.4"/>
+                        <g stroke-width="1.7" stroke-linecap="round">
+                            <path d="M12 2.2v2.6M12 19.2v2.6M2.2 12h2.6M19.2 12h2.6M5.1 5.1l1.9 1.9M17 17l1.9 1.9M18.9 5.1L17 7M7 17l-1.9 1.9"/>
+                        </g>
+                    </svg>
+                    <svg class="theme-toggle__moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                        <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+                    </svg>
+                </button>
 
                 <a class="s-header__menu-toggle" href="#0"><span>Menu</span></a>
             </div> <!-- end s-header__block -->
@@ -85,7 +199,10 @@
                     </li>
                     <li>
                         <a href="https://public.tableau.com/app/profile/mauricio.vargas7357/vizzes" target="_blank">
-                            <img src="images/logo-tableau.svg" alt="Tableau" width="24" height="24" style="fill:rgba(0, 0, 0, 1);">
+                            <!-- inlined rather than <img src>: an external SVG
+                                 cannot be recoloured by CSS, so it could not
+                                 follow the theme -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M242.69,340.3h26.62V267.7h67V241.88h-67v-72.6H242.69v72.6H176.54V267.7h66.15Z"/><path d="M119.26,445.18h22.59V380.64h59.7V360.47h-59.7V295.13H119.26v65.34H59.56v20.17h59.7Z"/><path d="M370.15,212h22.59V147.5h60.5V128.13h-60.5V62.79H370.15v65.34h-59.7V147.5h59.7Z"/><path d="M246.72,496h19.36V450h41.15V433.08H266.08v-46H246.72v46H206.39V450h40.33Z"/><path d="M120.07,212h21V146.69h60.51V128.13H141V62.79h-21v65.34H59.56v18.56h60.51Z"/><path d="M435.72,308.84h19.36V263.66H496V245.92H455.08V200.74H435.72v45.18H395.39v17.74h40.33Z"/><path fill-rule="evenodd" d="M370.15,445.18h22.59V380.64h60.5V360.47h-60.5V295.13H370.15v65.34h-59.7v20.17h59.7Z"/><path d="M307,74.08V60.37H266.66V16H252.14V60.37H211.81V74.08h40.33v44.37h14.52V74.08ZM56.11,305.61H70.63V261.24H111V247.53H70.63V204H56.11v43.56H16v14.52L56.11,262Z"/></svg>
                             <span class="u-screen-reader-text">Tableau</span>
                         </a>
                     </li>
@@ -103,14 +220,29 @@
             <div class="row">
                 <div class="column lg-12 s-intro__content">
 
-                    <div class="s-intro__text">
-                        <h1 class="s-intro__text-huge animate-on-load">
-                            Mauricio
-                        </h1>
-                        <h3 class="animate-on-load">Data Science <span>+</span> AI Automation</h3>
-                    </div>
+                    <p class="s-intro__kicker animate-on-load">Portfolio &middot; Bayam&oacute;n, Puerto Rico</p>
 
-                    <div class="s-intro__bg"></div>
+                    <h1 class="s-intro__name animate-on-load">Mauricio Vargas</h1>
+
+                    <p class="s-intro__standfirst animate-on-load">Data Science <span>+</span> AI Automation</p>
+
+                    <figure class="s-intro__plate animate-on-load">
+                        <picture>
+                            <source type="image/webp"
+                                    srcset="images/intro-bg-600.webp 600w, images/intro-bg-900.webp 900w, images/intro-bg-1200.webp 1200w, images/intro-bg-1600.webp 1600w"
+                                    sizes="(max-width: 700px) 92vw, 680px">
+                            <img src="images/intro-bg-900.jpg"
+                                 srcset="images/intro-bg-600.jpg 600w, images/intro-bg-900.jpg 900w, images/intro-bg-1200.jpg 1200w, images/intro-bg-1600.jpg 1600w"
+                                 sizes="(max-width: 700px) 92vw, 680px"
+                                 alt="Mauricio Vargas"
+                                 width="3024" height="4032"
+                                 fetchpriority="high" decoding="async">
+                        </picture>
+                        <figcaption>
+                            <span>Fig. 1. Mauricio Vargas</span>
+                            <span>Procurement Analyst, SNH Strategic Partners</span>
+                        </figcaption>
+                    </figure>
 
                 </div>
             </div>
@@ -129,10 +261,10 @@
                     <div class="column lg-12">
                         <h2 class="text-pretitle animate-on-load">About Me</h2>
     
-                        <p class="attention-getter animate-on-load">
+                        <p class="attention-getter drop-cap animate-on-load">
                             Hello! I'm Mauricio Vargas, a Procurement Analyst at SNH Strategic Partners, where I build LLM-powered document processing pipelines and an MCP (Model Context Protocol) server that lets stakeholders across a multi-entity private equity portfolio query contract data conversationally through Claude.
                             With a B.S. in Business Analytics and a minor in Logic & Computation from Carnegie Mellon University, plus hands-on experience in BI, financial analysis, and economic research, I bridge data, automation, and strategy.
-                            I've been getting more into AI engineering lately—building agentic workflows and generative AI extraction tools alongside my Python, SQL, and Power BI work to turn data into decisions.
+                            I've been getting more into AI engineering lately, building agentic workflows and generative AI extraction tools alongside my Python, SQL, and Power BI work to turn data into decisions.
                         </p>
                     </div>
                 </div>
@@ -183,7 +315,7 @@
                                 </div>
                                 <div class="timeline__desc">
                                     <p>Transformed claims analytics at AIG by developing Python-powered data pipelines and interactive Power BI dashboards,
-                                        automating reporting and uncovering actionable insights—improving team efficiency by 20% and enabling data-driven decision-making across teams.</p>
+                                        automating reporting and uncovering actionable insights, improving team efficiency by 20% and enabling data-driven decision-making across teams.</p>
                                 </div>
                             </div>
 
@@ -252,44 +384,58 @@
                             Skills & Expertise
                         </h2>
     
-                        <ul class="skill-bars">
-                            <li>
-                            <div class="progress percent70"></div>
-                            <strong>Python</strong>
+                        <ol class="skill-index">
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">Python</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Daily</span>
                             </li>
-                            <li>
-                            <div class="progress percent60"></div>
-                            <strong>AI & LLM Automation (MCP, Agentic Workflows)</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">LLM &amp; agentic workflows</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Production</span>
                             </li>
-                            <li>
-                            <div class="progress percent65"></div>
-                            <strong>Power BI</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">Model Context Protocol</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Production</span>
                             </li>
-                            <li>
-                            <div class="progress percent55"></div>
-                            <strong>SQL</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">SQL</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Intermediate</span>
                             </li>
-                            <li>
-                            <div class="progress percent55"></div>
-                            <strong>Excel</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">Power BI</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Advanced</span>
                             </li>
-                            <li>
-                            <div class="progress percent50"></div>
-                            <strong>Tableau</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">DAX</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Advanced</span>
                             </li>
-                            <li>
-                            <div class="progress percent45"></div>
-                            <strong>DAX</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">Tableau</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Advanced</span>
                             </li>
-                            <li>
-                            <div class="progress percent40"></div>
-                            <strong>R</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">Excel</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Advanced</span>
                             </li>
-                            <li>
-                            <div class="progress percent30"></div>
-                            <strong>AWS</strong>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">R</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Research</span>
                             </li>
-                        </ul>
+                            <li class="skill-index__item">
+                                <span class="skill-index__name">AWS</span>
+                                <span class="skill-index__leader" aria-hidden="true"></span>
+                                <span class="skill-index__note">Production</span>
+                            </li>
+                        </ol>
     
                     </div>
                 </div> <!-- end s-about__skills -->
@@ -339,15 +485,20 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\ccpic.jpg" Title="Climate Change" data-size="1050x700">
-                                <img src="images\ccpic.jpg" 
-                                     srcset="images\ccpic.jpg 1x, images\ccpic.jpg 2x" alt="">
+                            <a class="folio-item__thumb-link" href="https://github.com/mauriciovargasc/climatechange" target="_blank" rel="noopener noreferrer" title="Climate Change">
+                                <picture>
+                                    <source type="image/webp" srcset="images/climate-change-800.webp 800w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/climate-change-800.jpg"
+                                         srcset="images/climate-change-800.jpg 800w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="1176" height="893" loading="lazy" decoding="async"
+                                         alt="Streamlit dashboard visualising climate change trends">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
                             <div class="folio-item__meta">
                                 <span class="cat">Python Analysis|Dashboard</span>
-                                <a href="https://github.com/mauriciovargasc/climatechange" target="blank" title="Project Link" class="project-link">Project Link</a>
+                                <a href="https://github.com/mauriciovargasc/climatechange" target="_blank" rel="noopener noreferrer" title="Project Link" class="project-link">Project Link</a>
                             </div>
                             <h4 class="folio-item__title">Climate Change</h4>
                         </div>
@@ -359,15 +510,20 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\portfolio\dataviz.jpeg" title="Tableau Dashboards" data-size="1050x700">
-                                <img src="images\portfolio\dataviz.jpeg" 
-                                     srcset="images\portfolio\dataviz.jpeg 1x, images\portfolio\dataviz.jpeg 2x" alt="">
+                            <a class="folio-item__thumb-link" href="https://public.tableau.com/app/profile/mauricio.vargas7357/viz/HRDash_17205080322820/HRSummary" target="_blank" rel="noopener noreferrer" title="HR Dashboard">
+                                <picture>
+                                    <source type="image/webp" srcset="images/hr-dashboard-800.webp 800w, images/hr-dashboard-1400.webp 1400w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/hr-dashboard-800.jpg"
+                                         srcset="images/hr-dashboard-800.jpg 800w, images/hr-dashboard-1400.jpg 1400w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="2000" height="1328" loading="lazy" decoding="async"
+                                         alt="Tableau HR dashboard summarising headcount and turnover metrics">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
                             <div class="folio-item__meta">
                                 <span class="cat">Tableau</span>
-                                <a href="https://public.tableau.com/app/profile/mauricio.vargas7357/viz/HRDash_17205080322820/HRSummary" target="blank" title="Project Link" class="project-link">Project Link</a>
+                                <a href="https://public.tableau.com/app/profile/mauricio.vargas7357/viz/HRDash_17205080322820/HRSummary" target="_blank" rel="noopener noreferrer" title="Project Link" class="project-link">Project Link</a>
                             </div>
                             <h4 class="folio-item__title">HR Dashboard</h4>
                         </div>
@@ -379,15 +535,20 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\evVehicle.jpg" title="EV Sales Analysis" data-size="1050x700">
-                                <img src="images\evVehicle.jpg" 
-                                     srcset="images\evVehicle.jpg 1x, images\evVehicle.jpg 2x" alt="">
+                            <a class="folio-item__thumb-link" href="https://public.tableau.com/app/profile/mauricio.vargas7357/viz/EVAnalysis_17177382240050/EVAnalysis" target="_blank" rel="noopener noreferrer" title="Electric Vehicle Sales">
+                                <picture>
+                                    <source type="image/webp" srcset="images/ev-sales-800.webp 800w, images/ev-sales-1400.webp 1400w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/ev-sales-800.jpg"
+                                         srcset="images/ev-sales-800.jpg 800w, images/ev-sales-1400.jpg 1400w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="1920" height="1920" loading="lazy" decoding="async"
+                                         alt="Tableau analysis of electric vehicle sales trends">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
                             <div class="folio-item__meta">
                                 <span class="cat">Tableau</span>
-                                <a href="https://public.tableau.com/app/profile/mauricio.vargas7357/viz/EVAnalysis_17177382240050/EVAnalysis" target="blank" title="Project Link" class="project-link">Project Link</a>
+                                <a href="https://public.tableau.com/app/profile/mauricio.vargas7357/viz/EVAnalysis_17177382240050/EVAnalysis" target="_blank" rel="noopener noreferrer" title="Project Link" class="project-link">Project Link</a>
                             </div>
                             <h4 class="folio-item__title">Electric Vehicle Sales</h4>
                         </div>
@@ -399,15 +560,20 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\CRM sales.png" title="CRM Sales Dashboard and Analysis" data-size="1050x700">
-                                <img src="images\CRM sales.png" 
-                                     srcset="images\CRM sales.png 1x, images\CRM sales.png 2x" alt="">
+                            <a class="folio-item__thumb-link" href="https://github.com/mauriciovargasc/CRM-Sales-Project" target="_blank" rel="noopener noreferrer" title="CRM Sales Python Dashboard">
+                                <picture>
+                                    <source type="image/webp" srcset="images/crm-sales-800.webp 800w, images/crm-sales-1400.webp 1400w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/crm-sales-800.jpg"
+                                         srcset="images/crm-sales-800.jpg 800w, images/crm-sales-1400.jpg 1400w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="1536" height="768" loading="lazy" decoding="async"
+                                         alt="Python dashboard analysing a B2B CRM sales pipeline">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
                             <div class="folio-item__meta">
                                 <span class="cat">Python Analysis|Dashboard</span>
-                                <a href="https://github.com/mauriciovargasc/CRM-Sales-Project" target="blank" title="Project Link" class="project-link">Project Link</a>
+                                <a href="https://github.com/mauriciovargasc/CRM-Sales-Project" target="_blank" rel="noopener noreferrer" title="Project Link" class="project-link">Project Link</a>
                             </div>
                             <h4 class="folio-item__title">
                                 CRM Sales Python Dashboard
@@ -433,7 +599,7 @@
                             <div class="testimonial-slider__slide swiper-slide">
                                 <p>
                                     Actively honing my skills by working on Tableau and SQL projects.
-                                    Lately I've been getting more into AI engineering—building agentic workflows, MCP servers, and LLM-powered document processing pipelines.
+                                    Lately I've been getting more into AI engineering: building agentic workflows, MCP servers, and LLM-powered document processing pipelines.
                                 </p>
 
                             </div> <!-- end testimonial-slider__slide -->
@@ -535,46 +701,6 @@
         </footer> <!-- end s-footer -->
 
     </div> <!-- end s-pagewrap -->
-
-
-    <!-- photoswipe background
-    ================================================== -->
-    <div aria-hidden="true" class="pswp" role="dialog" tabindex="-1">
-
-        <div class="pswp__bg"></div>
-        <div class="pswp__scroll-wrap">
-
-            <div class="pswp__container">
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-            </div>
-
-            <div class="pswp__ui pswp__ui--hidden">
-                <div class="pswp__top-bar">
-                    <div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button> <button class="pswp__button pswp__button--share" title=
-                    "Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title=
-                    "Zoom in/out"></button>
-                    <div class="pswp__preloader">
-                        <div class="pswp__preloader__icn">
-                            <div class="pswp__preloader__cut">
-                                <div class="pswp__preloader__donut"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                    <div class="pswp__share-tooltip"></div>
-                </div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title=
-                "Next (arrow right)"></button>
-                <div class="pswp__caption">
-                    <div class="pswp__caption__center"></div>
-                </div>
-            </div>
-
-        </div>
-
-    </div> <!-- end photoSwipe background -->
 
 
     <!-- Java Script
