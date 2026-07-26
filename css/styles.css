@@ -79,40 +79,128 @@
  */
 
 :root {
-    --font-1    : "Inter", sans-serif;
-    --font-2    : "Castoro", serif;
+    /* Libre Franklin is Franklin Gothic — the American editorial sans,
+     * which is where all the tracked uppercase labels live.
+     * Fraunces carries an opsz axis (9..144), so one variable file gives
+     * a high-contrast cut at display sizes and a sturdier one at 19px.
+     * Fallbacks are picked for metric proximity to soften the FOUT.
+     */
+    --font-1    : "Libre Franklin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-2    : "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
 
     /* monospace
     */
     --font-mono : Consolas, "Andale Mono", Courier, "Courier New", monospace;
 }
 
-/* ------------------------------------------------------------------- 
- * ## colors
+/* -------------------------------------------------------------------
+ * ## colors — mid-century editorial
+ *
+ * Cream stock, ink black, oxblood accent. The layer that gets edited
+ * by hand is the semantic one; everything below it is aliases kept so
+ * the ~4000 lines of component rules never need to change.
  * ------------------------------------------------------------------- */
 :root {
 
-    /* color-1(#5F9295)
-     * color-2(#2D2327)
+    color-scheme                   : light;
+
+    /* ---------------------------------------------------------------
+     * semantic layer — edit here
+     * --------------------------------------------------------------- */
+
+    /* surfaces */
+    --color-paper                  : #F3EDE1;   /* cream stock            */
+    --color-paper-raised           : #FAF6EE;   /* plate, card, works band */
+    --color-paper-sunken           : #E9E1D2;
+
+    /* ink */
+    --color-ink                    : #1A1614;
+    --color-ink-deep               : #100D0B;
+    --color-ink-deepest            : #080706;
+    --color-ink-soft               : #3A322C;
+    --color-ink-muted              : #6B6156;
+
+    /* accent — oxblood through rust */
+    --color-accent-soft            : #E3C7BB;   /* wash, marks, fills     */
+    --color-accent-light           : #B5502F;   /* rust, large text only  */
+    --color-accent                 : #9A3B2F;   /* 5.9:1 on paper         */
+    --color-accent-deep            : #7A2E2B;   /* oxblood, 8.1:1, links  */
+    --color-accent-deepest         : #55201F;
+
+    /* foreground on a dark scrim or on the accent — does NOT invert */
+    --color-on-scrim               : #F6F1E7;
+    --color-on-accent              : #FAF6EE;
+
+    /* rules, scrims, shadow */
+    --color-rule                   : rgba(26, 22, 20, .14);
+    --color-rule-strong            : rgba(26, 22, 20, .30);
+    --color-rule-soft              : rgba(26, 22, 20, .22);
+    --color-scrim                  : rgba(28, 16, 14, .55);
+    --color-scrim-strong           : rgba(28, 16, 14, .64);
+    --color-scrim-solid            : #1C100E;
+    --shadow-ink                   : rgba(26, 22, 20, .10);
+
+    /* paper grain — one grey speckle tile, reads correctly on cream
+     * and on tobacco, so only the alpha changes between themes.
+     * '#' must be escaped as %23 inside a data URI.
      */
-    --color-1                      : hsla(183, 22%, 48%, 1);
-    --color-2                      : hsla(336, 13%, 16%, 1);
+    --grain                        : url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    --grain-opacity                : .05;
 
-    /* theme color variations
+    /* muted foregrounds — these read from the middle of the ramp, so a
+     * mirrored ramp lands them on the wrong side. They get explicit
+     * overrides in dark mode rather than following it.
      */
-    --color-1-lighter              : hsla(183, 22%, 68%, 1);
-    --color-1-light                : hsla(183, 22%, 58%, 1);
-    --color-1-dark                 : hsla(183, 22%, 38%, 1);
-    --color-1-darker               : hsla(183, 22%, 28%, 1);
+    --color-text-muted             : var(--color-ink-muted);
+    --color-text-faint             : var(--color-ink-soft);
 
-    --color-2-lighter              : hsla(336, 13%, 36%, 1);
-    --color-2-light                : hsla(336, 13%, 26%, 1);
-    --color-2-dark                 : hsla(336, 13%, 10%, 1);
-    --color-2-darker               : hsla(336, 13%, 5%, 1);
+    /* ---------------------------------------------------------------
+     * warm gray ramp (light surface -> dark ink)
+     *
+     * Used semantically throughout: low numbers are surfaces, high
+     * numbers are ink. Dark mode emits this same table reversed.
+     * --------------------------------------------------------------- */
+    --color-gray-1                 : #F7F2E8;
+    --color-gray-2                 : #F0E9DC;
+    --color-gray-3                 : #E7DFD0;
+    --color-gray-4                 : #DDD3C2;
+    --color-gray-5                 : #D2C7B4;
+    --color-gray-6                 : #C6BAA6;
+    --color-gray-7                 : #B9AC97;
+    --color-gray-8                 : #AB9E88;
+    --color-gray-9                 : #9C8F79;
+    --color-gray-10                : #8D806B;
+    --color-gray-11                : #7E725E;
+    --color-gray-12                : #6F6451;
+    --color-gray-13                : #605645;
+    --color-gray-14                : #52493A;
+    --color-gray-15                : #443C2F;
+    --color-gray-16                : #372F25;
+    --color-gray-17                : #2B241C;
+    --color-gray-18                : #201A14;
+    --color-gray-19                : #16110D;
+    --color-black                  : var(--color-ink);
+    --color-white                  : var(--color-paper-raised);
 
-    /* feedback colors
-     * color-error(#ffd1d2), color-success(#c8e675), 
-     * color-info(#d7ecfb), color-notice(#fff099)
+    /* ---------------------------------------------------------------
+     * legacy aliases — do not rename, the component rules depend on them
+     * --------------------------------------------------------------- */
+    --color-1                      : var(--color-accent);
+    --color-1-lighter              : var(--color-accent-soft);
+    --color-1-light                : var(--color-accent-light);
+    --color-1-dark                 : var(--color-accent-deep);
+    --color-1-darker               : var(--color-accent-deepest);
+
+    --color-2                      : var(--color-ink);
+    /* a:hover reads --color-2-lighter. Under ink semantics that would
+     * make links go duller on hover, so it points at the rust instead.
+     */
+    --color-2-lighter              : var(--color-accent-light);
+    --color-2-light                : var(--color-ink-soft);
+    --color-2-dark                 : var(--color-ink-deep);
+    --color-2-darker               : var(--color-ink-deepest);
+
+    /* feedback colors — warmed to sit on cream
      */
     --color-error                  : hsla(359, 100%, 91%, 1);
     --color-success                : hsla(76, 69%, 68%, 1);
@@ -123,74 +211,12 @@
     --color-info-content           : hsla(205, 32%, 31%, 1);
     --color-notice-content         : hsla(51, 30%, 30%, 1);
 
-    /* shades 
-     * generated using 
-     * Tint & Shade Generator 
-     * (https://maketintsandshades.com/)
-     */
-    --color-black                  : #000000;
-    --color-gray-19                : #0d0f0f;
-    --color-gray-18                : #1b1e1e;
-    --color-gray-17                : #282d2e;
-    --color-gray-16                : #363c3d;
-    --color-gray-15                : #444b4c;
-    --color-gray-14                : #515a5b;
-    --color-gray-13                : #5f696a;
-    --color-gray-12                : #6c787a;
-    --color-gray-11                : #7a8789;
-    --color-gray-10                : #879698;
-    --color-gray-9                 : #93a1a2;
-    --color-gray-8                 : #9fabad;
-    --color-gray-7                 : #abb6b7;
-    --color-gray-6                 : #b7c0c1;
-    --color-gray-5                 : #c3cbcc;
-    --color-gray-4                 : #cfd5d6;
-    --color-gray-3                 : #dbe0e0;
-    --color-gray-2                 : #e7eaea;
-    --color-gray-1                 : #f3f5f5;
-    --color-white                  : #ffffff;
-
-    /* ---------------------------------------------------------------
-     * semantic surface layer
-     *
-     * Every colour that used to be hardcoded in a rule now resolves
-     * through one of these. Values here are still the original theme,
-     * so this layer is a no-op until the palette is swapped — at which
-     * point re-pointing these is enough to retheme the whole site and
-     * to define a dark mode.
-     * --------------------------------------------------------------- */
-
-    /* surfaces */
-    --color-paper                  : #CFE6E8;
-    --color-paper-raised           : var(--color-white);
-
-    /* ink */
-    --color-ink-deepest            : #000000;
-
-    /* foreground on top of a dark scrim or accent — does NOT invert */
-    --color-on-scrim               : var(--color-white);
-    --color-on-accent              : var(--color-white);
-
-    /* scrims and rules */
-    --color-scrim                  : rgba(0, 0, 0, 0.5);
-    --color-scrim-solid            : #000000;
-    --color-rule-strong            : rgba(0, 0, 0, 0.3);
-    --color-rule-soft              : var(--color-gray-10);
-    --shadow-ink                   : rgba(0, 0, 0, 0.01);
-
-    /* Muted foregrounds. These pick a value from the middle of the gray
-     * ramp, so a mirrored ramp would land them on the wrong side — they
-     * get their own overrides in dark mode rather than following it.
-     */
-    --color-text-muted             : var(--color-gray-8);
-    --color-text-faint             : var(--color-gray-14);
-
     /* text
      */
     --color-text                   : var(--color-gray-17);
     --color-text-dark              : var(--color-gray-19);
     --color-text-light             : var(--color-gray-12);
-    --color-placeholder            : var(--color-gray-12);
+    --color-placeholder            : var(--color-gray-11);
 
     /* buttons
      */
@@ -198,31 +224,31 @@
     --color-btn-text               : var(--color-text);
     --color-btn-hover              : var(--color-gray-5);
     --color-btn-hover-text         : var(--color-text);
-    --color-btn-primary            : var(--color-1-dark);
-    --color-btn-primary-text       : var(--color-white);
+    --color-btn-primary            : var(--color-accent-deep);
+    --color-btn-primary-text       : var(--color-on-accent);
     --color-btn-primary-hover      : var(--color-text-dark);
-    --color-btn-primary-hover-text : var(--color-white);
-    --color-btn-stroke             : var(--color-1-dark);
-    --color-btn-stroke-text        : var(--color-1-darker);
+    --color-btn-primary-hover-text : var(--color-on-accent);
+    --color-btn-stroke             : var(--color-accent-deep);
+    --color-btn-stroke-text        : var(--color-accent-deep);
     --color-btn-stroke-hover       : var(--color-text-dark);
-    --color-btn-stroke-hover-text  : var(--color-white);
+    --color-btn-stroke-hover-text  : var(--color-on-accent);
 
     /* preloader
      */
     --color-preloader-bg           : var(--color-paper);
     --color-loader                 : var(--color-text-dark);
-    --color-loader-light           : var(--color-1-lighter);
+    --color-loader-light           : var(--color-accent-soft);
 
     /* others
      */
     --color-body                   : var(--color-paper);
-    --color-border                 : rgba(0, 0, 0, .08);
-    --border-radius                : 3px;
+    --color-border                 : var(--color-rule);
+    --border-radius                : 0;          /* print has no rounded corners */
 
     /* vendor.css declares --swiper-theme-color on :root and loads
      * first, so this redeclaration wins.
      */
-    --swiper-theme-color           : var(--color-1);
+    --swiper-theme-color           : var(--color-accent);
 }
 
 /* ------------------------------------------------------------------- 
@@ -1644,20 +1670,26 @@ hr.fancy {
 }
 
 hr.fancy::before {
-    content        : "*****";
-    letter-spacing : .3em;
+    content        : "\2042";        /* asterism — the printer's mark */
+    font-family    : var(--font-2);
+    font-size      : var(--text-lg);
+    color          : var(--color-accent);
+    letter-spacing : 0;
 }
 
 /* --------------------------------------------------------------------
  * ## additional typography & helper classes
  * -------------------------------------------------------------------- */
+/* Set in the serif so the About copy reads as editorial body text and
+ * gives the drop cap something to sit against.
+ */
 .lead,
 .attention-getter {
-    font-family : var(--font-1);
+    font-family : var(--font-2);
     font-weight : 400;
     font-size   : var(--text-lg);
-    line-height : 1.8275;
-    color       : var(--color-text-dark);
+    line-height : 1.7;
+    color       : var(--color-text);
 }
 
 @media screen and (max-width: 900px) {
@@ -1719,16 +1751,34 @@ hr.fancy::before {
     left              : 50%;
 }
 
+/* A bold sans drop cap is the opposite of letterpress — this is the
+ * serif at book weight, in oxblood, sunk three lines into the copy.
+ */
 .drop-cap:first-letter {
     float          : left;
-    font-family    : var(--font-1);
-    font-weight    : 700;
-    font-size      : calc(3 * var(--space));
-    line-height    : 1;
-    padding        : 0 0.125em 0 0;
+    font-family    : var(--font-2);
+    font-weight    : 400;
+    font-size      : calc(3.2 * var(--space));
+    line-height    : .78;
+    margin         : .04em .1em 0 0;
+    padding        : 0;
     text-transform : uppercase;
     background     : transparent;
-    color          : var(--color-text-dark);
+    color          : var(--color-accent-deep);
+}
+
+/* Where supported, let the browser do the sinking properly. Firefox
+ * has no initial-letter and keeps the float above.
+ */
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+    .drop-cap:first-letter {
+        float                  : none;
+        font-size              : inherit;
+        line-height            : inherit;
+        margin                 : 0 .1em 0 0;
+        -webkit-initial-letter : 3;
+        initial-letter         : 3;
+    }
 }
 
 .text-center {
@@ -2780,11 +2830,11 @@ td:last-child {
 }
 
 .text-huge-title {
-    --text-huge       : 9.4rem;
-    --text-multiplier : 1;
     font-family       : var(--font-2);
     font-weight       : 400;
-    font-size         : calc(var(--text-huge) * var(--text-multiplier));
+    /* replaces --text-huge/--text-multiplier and the seven media-query
+     * step-downs that used to drive them */
+    font-size         : clamp(3.8rem, 7.4vw, 9.4rem);
     line-height       : 1.0638;
     letter-spacing    : -0.02em;
     color             : var(--color-text-dark);
@@ -2865,27 +2915,6 @@ img.u-pull-left {
         font-size : calc(var(--text-size) * 1.0526);
     }
 
-    .text-huge-title {
-        --text-multiplier : .9;
-    }
-}
-
-@media screen and (max-width: 800px) {
-    .text-huge-title {
-        --text-multiplier : .84;
-    }
-}
-
-@media screen and (max-width: 700px) {
-    .text-huge-title {
-        --text-multiplier : .74;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .text-huge-title {
-        --text-multiplier : .64;
-    }
 }
 
 @media screen and (max-width: 500px) {
@@ -2893,24 +2922,7 @@ img.u-pull-left {
         font-size : var(--text-sm);
     }
 
-    .text-huge-title {
-        --text-multiplier : .58;
-    }
 }
-
-@media screen and (max-width: 480px) {
-    .text-huge-title {
-        --text-multiplier : .54;
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .text-huge-title {
-        --text-multiplier : .45;
-    }
-}
-
-
 
 /* ===================================================================
  * # PAGE WRAP
@@ -4316,4 +4328,109 @@ html {
         opacity   : 1    !important;
         transform : none !important;
     }
+}
+
+/* ===================================================================
+ * # vintage detailing
+ *
+ * Mid-century editorial print: paper grain, hairline rules, numbered
+ * sections and a light letterpress on the small tracked labels.
+ * ------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------
+ * ## paper grain
+ *
+ * One fixed, non-interactive layer. Deliberately NOT mix-blend-mode and
+ * NOT background-attachment: fixed — both force the page into a
+ * compositing group and show up as scroll jank on low-end hardware.
+ * Plain alpha over a grey speckle tile gets the same look for free.
+ *
+ * Sits above the page but below the preloader (500) and PhotoSwipe
+ * (1500) so the texture reads across photographs too, the way ink and
+ * paper share a surface in print.
+ * ------------------------------------------------------------------- */
+.s-pagewrap::before {
+    content        : "";
+    position       : fixed;
+    inset          : 0;
+    z-index        : 400;
+    pointer-events : none;
+    background     : var(--grain) repeat 0 0 / 160px 160px;
+    opacity        : var(--grain-opacity);
+}
+
+/* -------------------------------------------------------------------
+ * ## rules
+ * ------------------------------------------------------------------- */
+hr {
+    border-top : 1px solid var(--color-rule);
+}
+
+/* thick-over-thin, the classic Oxford rule */
+.u-rule-oxford {
+    height     : 6px;
+    border     : 0;
+    margin     : var(--vspace-1) 0;
+    color      : var(--color-rule-strong);
+    background :
+        linear-gradient(currentColor, currentColor) 0 0   / 100% 2px no-repeat,
+        linear-gradient(currentColor, currentColor) 0 5px / 100% 1px no-repeat;
+}
+
+/* -------------------------------------------------------------------
+ * ## numbered sections
+ *
+ * Renders "01 — About Me", "02 — Resume", and so on. The intro has no
+ * .text-pretitle, so it is naturally excluded from the sequence.
+ * ------------------------------------------------------------------- */
+.s-pagewrap {
+    counter-reset : section;
+}
+
+.s-pagewrap .text-pretitle::before {
+    counter-increment    : section;
+    content              : counter(section, decimal-leading-zero) "\2002\2014\2002";
+    color                : var(--color-accent);
+    font-variant-numeric : tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1;
+}
+
+/* -------------------------------------------------------------------
+ * ## letterpress
+ *
+ * Restricted to small tracked labels. On large display type a light
+ * emboss turns into a grey halo, and on body copy a 1px shadow costs
+ * real legibility.
+ * ------------------------------------------------------------------- */
+.text-subtitle,
+.timeline__timeframe {
+    text-shadow : 0 1px 0 rgba(255, 253, 247, .55);
+}
+
+/* -------------------------------------------------------------------
+ * ## squared-off furniture
+ *
+ * --border-radius is already 0; these are the two rules that hardcoded
+ * a radius of their own.
+ * ------------------------------------------------------------------- */
+.ss-go-top a {
+    border-radius : 0;
+    border        : 1px solid var(--color-on-accent);
+}
+
+.testimonial-slider__next,
+.testimonial-slider__prev {
+    border-radius : 0;
+    border        : 1px solid var(--color-rule-strong);
+}
+
+/* -------------------------------------------------------------------
+ * ## numerals
+ *
+ * Dates and figures line up in columns, as they would in a set table.
+ * ------------------------------------------------------------------- */
+.timeline__timeframe,
+.folio-item__meta,
+.s-footer__contact-info {
+    font-variant-numeric : tabular-nums lining-nums;
 }
