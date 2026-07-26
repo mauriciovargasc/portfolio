@@ -19,8 +19,12 @@
     /* The preloader is deliberately NOT animated here. Its teardown is
      * driven by the .ss-loaded class in CSS so that a failure in this
      * library can never leave the overlay covering the page.
+     *
+     * For the same reason the timeline is only built if anime actually
+     * loaded. This runs at module scope, so a throw here would take the
+     * whole file down and leave the overlay up for good.
      */
-    const tl = anime.timeline( {
+    const tl = (typeof anime === 'function') ? anime.timeline( {
         easing: 'easeInOutCubic',
         duration: 800,
         autoplay: false
@@ -40,7 +44,7 @@
         translateY: [100, 0],
         opacity: [0, 1],
         delay: anime.stagger(400)
-    });
+    }) : null;
 
 
 
@@ -60,8 +64,11 @@
 
         let finished = false;
 
+        // Clears the start state the CSS sets, for every path where the
+        // timeline will not run: reduced motion, a throw inside anime, or
+        // anime missing entirely. Inline styles beat the .js rules.
         function revealIntro() {
-            document.querySelectorAll('.animate-on-load').forEach(function(el) {
+            document.querySelectorAll('.animate-on-load, .s-header').forEach(function(el) {
                 el.style.opacity = 1;
                 el.style.transform = 'none';
             });
@@ -78,20 +85,31 @@
             html.classList.remove('ss-preload');
             html.classList.add('ss-loaded');
 
-            // reduced motion: reveal instantly, skip the timeline entirely
-            if (SS_REDUCED.matches) {
+            // reduced motion, or no anime: reveal instantly
+            if (SS_REDUCED.matches || !tl) {
                 revealIntro();
                 return;
             }
 
             // anime.js drives the decorative intro only. If it fails, the
             // content must still end up visible rather than stuck at the
-            // opacity:0 the timeline sets on its first tick.
+            // opacity:0 the CSS sets before the timeline takes over.
             try {
                 tl.play();
             } catch (e) {
                 revealIntro();
+                return;
             }
+
+            // The try/catch above only sees a synchronous throw. Now that
+            // the CSS hides the header until the timeline runs, an anime
+            // that loads but never ticks would leave it invisible with no
+            // second chance, since done() is idempotent. The timeline runs
+            // ~4.6s; well past that, still hidden means it never ran.
+            setTimeout(function() {
+                const header = document.querySelector('.s-header');
+                if (header && getComputedStyle(header).opacity === '0') revealIntro();
+            }, 6000);
         }
 
         // wait on the LCP hero if there is a real <img> for it

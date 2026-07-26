@@ -2886,6 +2886,25 @@ td:last-child {
     opacity : 0;
 }
 
+/* Same idea for the elements the intro timeline animates in.
+ *
+ * anime.js does not apply a tween's `from` values when play() is
+ * called; it applies them on its first requestAnimationFrame tick, one
+ * frame later. Without a starting state here, that frame paints the
+ * masthead and header at their final position and full opacity, and
+ * the next frame snaps them to opacity 0 and translateY, then slides
+ * them back in. Through the preloader's 0.4s fade that reads as a
+ * stutter, as though the page rendered twice.
+ *
+ * Declaring the start state in CSS means there is no such frame. The
+ * timeline then animates from exactly where the paint already is, and
+ * ssPreloader's revealIntro() clears these inline if anime ever fails.
+ */
+.js .animate-on-load,
+.js .s-header {
+    opacity : 0;
+}
+
 /* ------------------------------------------------------------------- 
  * ## theme-specific typography classes
  * ------------------------------------------------------------------- */

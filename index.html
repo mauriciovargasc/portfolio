@@ -13,25 +13,28 @@
     (function () {
         var KEY  = 'mv-theme';
         var root = document.documentElement;
-        var mql  = window.matchMedia('(prefers-color-scheme: dark)');
         var stored = null;
+
+        /* On reload the browser restores the previous scroll position,
+         * and the preloader's done() calls scrollTo(0, 0). Whichever
+         * lands second wins, so the page could settle and then jump.
+         * Claiming it here, before restoration happens, ends the race:
+         * this page always opens at the top, which is what done()
+         * wanted anyway.
+         */
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
         try { stored = localStorage.getItem(KEY); } catch (e) {}
 
-        var theme = (stored === 'light' || stored === 'dark')
-            ? stored
-            : (mql.matches ? 'dark' : 'light');
+        /* Dark is the house style, not a response to the OS setting.
+         * A visitor who picks light in the toggle keeps it; everyone
+         * else gets dark whatever their system is set to.
+         */
+        var theme = (stored === 'light' || stored === 'dark') ? stored : 'dark';
 
         root.setAttribute('data-theme', theme);
         root.classList.remove('no-js');
         root.classList.add('js');
-
-        /* follow the OS only while the visitor hasn't chosen explicitly */
-        mql.addEventListener('change', function (e) {
-            var s = null;
-            try { s = localStorage.getItem(KEY); } catch (err) {}
-            if (!s) root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-        });
 
         window.__ssTheme = {
             key : KEY,
@@ -66,7 +69,7 @@
     <meta name="description" content="Mauricio Vargas builds LLM-powered document processing pipelines, MCP servers, and automated data pipelines for a multi-entity private equity portfolio. BS in Business Analytics, Carnegie Mellon.">
     <meta name="author" content="Mauricio Vargas">
     <link rel="canonical" href="https://mauriciovargasc.github.io/portfolio/">
-    <meta name="theme-color" content="#F3EDE1">
+    <meta name="theme-color" content="#191512">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mauriciovargasc.github.io/portfolio/">
@@ -156,7 +159,7 @@
                      list sits inside __nav-wrap, which is scaleY(0) and
                      visibility:hidden until the hamburger is opened, so a
                      toggle there would be unreachable on mobile. -->
-                <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark mode">
+                <button type="button" class="theme-toggle" aria-pressed="true" aria-label="Dark mode">
                     <svg class="theme-toggle__sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
                         <circle cx="12" cy="12" r="4.4"/>
                         <g stroke-width="1.7" stroke-linecap="round">
