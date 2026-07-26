@@ -79,7 +79,7 @@
  */
 
 :root {
-    /* Libre Franklin is Franklin Gothic — the American editorial sans,
+    /* Libre Franklin is Franklin Gothic - the American editorial sans,
      * which is where all the tracked uppercase labels live.
      * Fraunces carries an opsz axis (9..144), so one variable file gives
      * a high-contrast cut at display sizes and a sturdier one at 19px.
@@ -94,7 +94,7 @@
 }
 
 /* -------------------------------------------------------------------
- * ## colors — mid-century editorial
+ * ## colors - mid-century editorial
  *
  * Cream stock, ink black, oxblood accent. The layer that gets edited
  * by hand is the semantic one; everything below it is aliases kept so
@@ -105,7 +105,7 @@
     color-scheme                   : light;
 
     /* ---------------------------------------------------------------
-     * semantic layer — edit here
+     * semantic layer - edit here
      * --------------------------------------------------------------- */
 
     /* surfaces */
@@ -120,14 +120,14 @@
     --color-ink-soft               : #3A322C;
     --color-ink-muted              : #6B6156;
 
-    /* accent — oxblood through rust */
+    /* accent - oxblood through rust */
     --color-accent-soft            : #E3C7BB;   /* wash, marks, fills     */
     --color-accent-light           : #B5502F;   /* rust, large text only  */
     --color-accent                 : #9A3B2F;   /* 5.9:1 on paper         */
     --color-accent-deep            : #7A2E2B;   /* oxblood, 8.1:1, links  */
     --color-accent-deepest         : #55201F;
 
-    /* foreground on a dark scrim or on the accent — does NOT invert */
+    /* foreground on a dark scrim or on the accent - does NOT invert */
     --color-on-scrim               : #F6F1E7;
     --color-on-accent              : #FAF6EE;
 
@@ -140,14 +140,14 @@
     --color-scrim-solid            : #1C100E;
     --shadow-ink                   : rgba(26, 22, 20, .10);
 
-    /* paper grain — one grey speckle tile, reads correctly on cream
+    /* paper grain - one grey speckle tile, reads correctly on cream
      * and on tobacco, so only the alpha changes between themes.
      * '#' must be escaped as %23 inside a data URI.
      */
     --grain                        : url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
     --grain-opacity                : .05;
 
-    /* muted foregrounds — these read from the middle of the ramp, so a
+    /* muted foregrounds - these read from the middle of the ramp, so a
      * mirrored ramp lands them on the wrong side. They get explicit
      * overrides in dark mode rather than following it.
      */
@@ -183,7 +183,7 @@
     --color-white                  : var(--color-paper-raised);
 
     /* ---------------------------------------------------------------
-     * legacy aliases — do not rename, the component rules depend on them
+     * legacy aliases - do not rename, the component rules depend on them
      * --------------------------------------------------------------- */
     --color-1                      : var(--color-accent);
     --color-1-lighter              : var(--color-accent-soft);
@@ -200,7 +200,7 @@
     --color-2-dark                 : var(--color-ink-deep);
     --color-2-darker               : var(--color-ink-deepest);
 
-    /* feedback colors — warmed to sit on cream
+    /* feedback colors - warmed to sit on cream
      */
     --color-error                  : hsla(359, 100%, 91%, 1);
     --color-success                : hsla(76, 69%, 68%, 1);
@@ -252,7 +252,7 @@
 }
 
 /* -------------------------------------------------------------------
- * ## dark — warm tobacco, not cold gray
+ * ## dark - warm tobacco, not cold gray
  *
  * MUST stay after :root. Both selectors are specificity (0,1,0), so
  * source order is the only thing deciding which wins.
@@ -277,12 +277,12 @@
     --color-ink-muted       : #A0937F;
 
     /* The accent has to lighten, not just warm. Oxblood #7A2E2B on a
-     * tobacco base is about 1.8:1 — unreadable. This lifts to terracotta.
+     * tobacco base is about 1.8:1 - unreadable. This lifts to terracotta.
      */
     --color-accent-soft     : #4A2A22;
     --color-accent-light    : #DE9070;
     --color-accent          : #C86A55;   /* 4.9:1 on paper */
-    --color-accent-deep     : #D07A62;   /* 5.8:1 — links  */
+    --color-accent-deep     : #D07A62;   /* 5.8:1 - links  */
     --color-accent-deepest  : #E3A88E;
 
     /* on-scrim does NOT flip: it sits on a dark scrim in both themes */
@@ -1753,7 +1753,7 @@ hr.fancy {
 }
 
 hr.fancy::before {
-    content        : "\2042";        /* asterism — the printer's mark */
+    content        : "\2042";        /* asterism - the printer's mark */
     font-family    : var(--font-2);
     font-size      : var(--text-lg);
     color          : var(--color-accent);
@@ -1834,7 +1834,7 @@ hr.fancy::before {
     left              : 50%;
 }
 
-/* A bold sans drop cap is the opposite of letterpress — this is the
+/* A bold sans drop cap is the opposite of letterpress - this is the
  * serif at book weight, in oxblood, sunk three lines into the copy.
  */
 .drop-cap:first-letter {
@@ -2813,7 +2813,7 @@ td:last-child {
     line-height : calc(0.9375 * var(--space));
 }
 
-/* gated on .js — without JS (or if plugins.js fails to load) these
+/* gated on .js - without JS (or if plugins.js fails to load) these
  * elements must stay visible rather than being permanently hidden.
  */
 .js [data-animate-el] {
@@ -3334,8 +3334,15 @@ img.u-pull-left {
  * caption set like a figure reference.
  * -------------------------------------------------------------------- */
 .s-intro__plate {
-    margin   : 0;
-    position : relative;
+    /* full bleed: break out of the centred .row and span the viewport.
+     * .s-pagewrap has overflow:hidden, so 100vw cannot introduce a
+     * horizontal scrollbar when a vertical one is present.
+     */
+    width        : 100vw;
+    margin-left  : calc(50% - 50vw);
+    margin-right : calc(50% - 50vw);
+    margin-top   : var(--vspace-0_5);
+    position     : relative;
 }
 
 .s-intro__plate picture {
@@ -3345,29 +3352,31 @@ img.u-pull-left {
 .s-intro__plate img {
     display          : block;
     width            : 100%;
-    aspect-ratio     : 3 / 2;
+    aspect-ratio     : 2 / 1;
     object-fit       : cover;
-    /* the source is a portrait photograph cropped to a landscape plate,
-     * so bias the crop upward to keep the subject in frame */
-    object-position  : center 25%;
+    /* the source is a portrait photograph cropped to a banner, so bias
+     * the crop upward to keep the subject in frame */
+    object-position  : center 30%;
     background-color : var(--color-gray-4);
-    border           : 1px solid var(--color-rule-strong);
     filter           : saturate(.86) contrast(1.03) sepia(.05);
     margin-bottom    : 0;
 }
 
+/* the caption returns to the content column rather than the full bleed */
 .s-intro__plate figcaption {
     display         : flex;
     flex-wrap       : wrap;
     justify-content : space-between;
     gap             : var(--vspace-0_25) var(--vspace-1);
+    width           : 92%;
+    max-width       : var(--width-max);
+    margin          : var(--vspace-0_5) auto 0;
     font-family     : var(--font-1);
     font-size       : var(--text-xs);
     font-weight     : 400;
     text-transform  : uppercase;
     letter-spacing  : .18em;
     color           : var(--color-text-muted);
-    margin-top      : var(--vspace-0_5);
 }
 
 /* -------------------------------------------------------------------
@@ -3379,7 +3388,7 @@ img.u-pull-left {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
     .s-intro__plate img {
         aspect-ratio : 4 / 3;
     }
@@ -3689,8 +3698,19 @@ img.u-pull-left {
     padding-left : calc(var(--gutter) + 1.6rem);
 }
 
+/* Previously display:none because PhotoSwipe consumed this text for its
+ * lightbox caption. The thumbnails now link straight to the project, so
+ * the description earns its place on the page.
+ */
 .folio-item__caption {
-    display : none;
+    margin-top : var(--vspace-0_25);
+}
+
+.folio-item__caption p {
+    font-size   : calc(var(--text-size) * 0.895);
+    line-height : 1.6;
+    color       : var(--color-text);
+    margin      : 0;
 }
 
 /* plate
@@ -3725,7 +3745,7 @@ img.u-pull-left {
 /* a tracked word rather than a "+" glyph */
 .folio-item__thumb a::after {
     z-index        : 1;
-    content        : "View";
+    content        : "View project";
     font-family    : var(--font-1);
     font-size      : var(--text-xs);
     font-weight    : 500;
@@ -3813,7 +3833,7 @@ img.u-pull-left {
     color : var(--color-1);
 }
 
-/* on hover — the ink comes up to full strength
+/* on hover - the ink comes up to full strength
  */
 .folio-item__thumb:hover .folio-item__thumb-link img {
     transform : scale(1.04);
@@ -4307,7 +4327,7 @@ html {
         scroll-behavior           : auto  !important;
     }
 
-    /* JS reveals are opacity-gated — make sure content is never
+    /* JS reveals are opacity-gated - make sure content is never
      * left invisible when the animations are suppressed.
      */
     .js [data-animate-el],
@@ -4328,7 +4348,7 @@ html {
  * ## paper grain
  *
  * One fixed, non-interactive layer. Deliberately NOT mix-blend-mode and
- * NOT background-attachment: fixed — both force the page into a
+ * NOT background-attachment: fixed - both force the page into a
  * compositing group and show up as scroll jank on low-end hardware.
  * Plain alpha over a grey speckle tile gets the same look for free.
  *
@@ -4367,7 +4387,7 @@ hr {
 /* -------------------------------------------------------------------
  * ## numbered sections
  *
- * Renders "01 — About Me", "02 — Resume", and so on. The intro has no
+ * Renders "01. About Me", "02. Resume", and so on. The intro has no
  * .text-pretitle, so it is naturally excluded from the sequence.
  * ------------------------------------------------------------------- */
 .s-pagewrap {
@@ -4376,7 +4396,7 @@ hr {
 
 .s-pagewrap .text-pretitle::before {
     counter-increment    : section;
-    content              : counter(section, decimal-leading-zero) "\2002\2014\2002";
+    content              : counter(section, decimal-leading-zero) ". ";
     color                : var(--color-accent);
     font-variant-numeric : tabular-nums lining-nums;
     font-feature-settings: "tnum" 1;
@@ -4489,7 +4509,7 @@ hr {
 }
 
 /* below 900px the hamburger occupies right:1.6rem for 6.8rem, so sit
- * just inboard of it — and stay outside the collapsing nav panel */
+ * just inboard of it - and stay outside the collapsing nav panel */
 @media screen and (max-width: 900px) {
     .theme-toggle {
         top       : calc(var(--header-height) / 2);
