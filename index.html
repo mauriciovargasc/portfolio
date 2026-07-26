@@ -66,19 +66,21 @@
     <meta name="description" content="Mauricio Vargas builds LLM-powered document processing pipelines, MCP servers, and automated data pipelines for a multi-entity private equity portfolio. BS in Business Analytics, Carnegie Mellon.">
     <meta name="author" content="Mauricio Vargas">
     <link rel="canonical" href="https://mauriciovargasc.github.io/portfolio/">
-    <meta name="theme-color" content="#CFE6E8">
+    <meta name="theme-color" content="#F3EDE1">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mauriciovargasc.github.io/portfolio/">
     <meta property="og:title" content="Mauricio Vargas — Data Science, BI &amp; AI Automation">
     <meta property="og:description" content="Building LLM-powered document processing, MCP servers, and automated data pipelines for a multi-entity private equity portfolio.">
-    <meta property="og:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg.jpeg">
+    <meta property="og:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg-1400.jpg">
+    <meta property="og:image:width" content="1400">
+    <meta property="og:image:height" content="933">
     <meta property="og:image:alt" content="Mauricio Vargas">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Mauricio Vargas — Data Science, BI &amp; AI Automation">
     <meta name="twitter:description" content="Building LLM-powered document processing, MCP servers, and automated data pipelines for a multi-entity private equity portfolio.">
-    <meta name="twitter:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg.jpeg">
+    <meta name="twitter:image" content="https://mauriciovargasc.github.io/portfolio/images/intro-bg-1400.jpg">
 
     <!-- fonts
     ================================================== -->
@@ -225,10 +227,17 @@
                     <p class="s-intro__standfirst animate-on-load">Data Science <span>+</span> AI Automation</p>
 
                     <figure class="s-intro__plate animate-on-load">
-                        <img src="images/intro-bg.jpeg"
-                             alt="Mauricio Vargas"
-                             width="3024" height="4032"
-                             fetchpriority="high" decoding="async">
+                        <picture>
+                            <source type="image/webp"
+                                    srcset="images/intro-bg-800.webp 800w, images/intro-bg-1400.webp 1400w, images/intro-bg-2000.webp 2000w"
+                                    sizes="(max-width: 1200px) 92vw, 1200px">
+                            <img src="images/intro-bg-1400.jpg"
+                                 srcset="images/intro-bg-800.jpg 800w, images/intro-bg-1400.jpg 1400w, images/intro-bg-2000.jpg 2000w"
+                                 sizes="(max-width: 1200px) 92vw, 1200px"
+                                 alt="Mauricio Vargas"
+                                 width="3024" height="2016"
+                                 fetchpriority="high" decoding="async">
+                        </picture>
                         <figcaption>
                             <span>Fig. 1 &mdash; Mauricio Vargas</span>
                             <span>Procurement Analyst, SNH Strategic Partners</span>
@@ -476,9 +485,14 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\ccpic.jpg" Title="Climate Change" data-size="1050x700">
-                                <img src="images\ccpic.jpg" 
-                                     srcset="images\ccpic.jpg 1x, images\ccpic.jpg 2x" alt="">
+                            <a class="folio-item__thumb-link" href="images/climate-change-full.jpg" title="Climate Change" data-size="1176x893">
+                                <picture>
+                                    <source type="image/webp" srcset="images/climate-change-800.webp 800w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/climate-change-800.jpg"
+                                         srcset="images/climate-change-800.jpg 800w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="1176" height="893" loading="lazy" decoding="async"
+                                         alt="Streamlit dashboard visualising climate change trends">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
@@ -496,9 +510,14 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\portfolio\dataviz.jpeg" title="Tableau Dashboards" data-size="1050x700">
-                                <img src="images\portfolio\dataviz.jpeg" 
-                                     srcset="images\portfolio\dataviz.jpeg 1x, images\portfolio\dataviz.jpeg 2x" alt="">
+                            <a class="folio-item__thumb-link" href="images/hr-dashboard-full.jpg" title="HR Dashboard" data-size="2000x1328">
+                                <picture>
+                                    <source type="image/webp" srcset="images/hr-dashboard-800.webp 800w, images/hr-dashboard-1400.webp 1400w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/hr-dashboard-800.jpg"
+                                         srcset="images/hr-dashboard-800.jpg 800w, images/hr-dashboard-1400.jpg 1400w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="2000" height="1328" loading="lazy" decoding="async"
+                                         alt="Tableau HR dashboard summarising headcount and turnover metrics">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
@@ -516,9 +535,14 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\evVehicle.jpg" title="EV Sales Analysis" data-size="1050x700">
-                                <img src="images\evVehicle.jpg" 
-                                     srcset="images\evVehicle.jpg 1x, images\evVehicle.jpg 2x" alt="">
+                            <a class="folio-item__thumb-link" href="images/ev-sales-full.jpg" title="Electric Vehicle Sales" data-size="1920x1920">
+                                <picture>
+                                    <source type="image/webp" srcset="images/ev-sales-800.webp 800w, images/ev-sales-1400.webp 1400w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/ev-sales-800.jpg"
+                                         srcset="images/ev-sales-800.jpg 800w, images/ev-sales-1400.jpg 1400w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="1920" height="1920" loading="lazy" decoding="async"
+                                         alt="Tableau analysis of electric vehicle sales trends">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">
@@ -536,9 +560,14 @@
                 <div class="column" data-animate-el>
                     <div class="folio-item">
                         <div class="folio-item__thumb">
-                            <a class="folio-item__thumb-link" href="images\CRM sales.png" title="CRM Sales Dashboard and Analysis" data-size="1050x700">
-                                <img src="images\CRM sales.png" 
-                                     srcset="images\CRM sales.png 1x, images\CRM sales.png 2x" alt="">
+                            <a class="folio-item__thumb-link" href="images/crm-sales-full.jpg" title="CRM Sales Dashboard and Analysis" data-size="1536x768">
+                                <picture>
+                                    <source type="image/webp" srcset="images/crm-sales-800.webp 800w, images/crm-sales-1400.webp 1400w" sizes="(max-width: 550px) 92vw, 550px">
+                                    <img src="images/crm-sales-800.jpg"
+                                         srcset="images/crm-sales-800.jpg 800w, images/crm-sales-1400.jpg 1400w" sizes="(max-width: 550px) 92vw, 550px"
+                                         width="1536" height="768" loading="lazy" decoding="async"
+                                         alt="Python dashboard analysing a B2B CRM sales pipeline">
+                                </picture>
                             </a>
                         </div>
                         <div class="folio-item__info">

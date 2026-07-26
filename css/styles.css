@@ -3338,6 +3338,10 @@ img.u-pull-left {
     position : relative;
 }
 
+.s-intro__plate picture {
+    display : block;
+}
+
 .s-intro__plate img {
     display          : block;
     width            : 100%;
@@ -3739,6 +3743,10 @@ img.u-pull-left {
     position       : absolute;
     left           : 50%;
     top            : 50%;
+}
+
+.folio-item__thumb picture {
+    display : block;
 }
 
 .folio-item__thumb img {
