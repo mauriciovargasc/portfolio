@@ -109,9 +109,18 @@
             });
         }
 
+        // Wait on the webfonts too. They are two round trips behind the
+        // HTML, so revealing on the hero alone paints the whole page in
+        // the local fallback and then re-renders it a moment later. The
+        // metric-matched @font-face rules in styles.css keep that swap
+        // from moving the layout if the cap below fires first.
+        const fontsReady = (document.fonts && document.fonts.ready)
+            ? document.fonts.ready.catch(function() {})
+            : Promise.resolve();
+
         Promise.race([
-            heroReady,
-            new Promise(function(resolve) { setTimeout(resolve, 1200); })
+            Promise.all([heroReady, fontsReady]),
+            new Promise(function(resolve) { setTimeout(resolve, 1500); })
         ]).then(done);
 
         window.addEventListener('load', done);   // failsafe only

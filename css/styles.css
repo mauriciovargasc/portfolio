@@ -78,15 +78,81 @@
  * serialises the font request behind this stylesheet's download+parse.
  */
 
+/* Metric-matched fallbacks.
+ *
+ * The webfonts sit two round trips behind the HTML: document ->
+ * fonts.googleapis.com CSS -> fonts.gstatic.com woff2. Until they land,
+ * text is drawn in a local face with quite different proportions, and
+ * measured on the actual files Georgia is 11.4% wider than Fraunces per
+ * character and its cap M is 17% wider. At a masthead running up to
+ * 9.4rem that reflow is impossible to miss.
+ *
+ * These faces wrap the same local fonts but scale them to the real
+ * metrics, so the swap changes the letterforms without moving the
+ * layout. Values are measured, not guessed:
+ *
+ *   size-adjust      = webfont advance / local advance, averaged over
+ *                      every run of text actually on this page and
+ *                      weighted by character count
+ *   ascent-override  = webfont ascent  / size-adjust
+ *   descent-override = webfont descent / size-adjust
+ *
+ * The ratio is deliberately weighted by real body copy rather than by
+ * the masthead. Fraunces is a variable font with an opsz axis, so it is
+ * ~104% of Georgia at 19px but only ~84% at 150px, and one descriptor
+ * cannot serve both. Body copy is what reflows: a width error there
+ * changes line counts, which changes block heights, which moves every
+ * section below it. A heading that is a few percent wide stays on its
+ * own line and shifts nothing.
+ *
+ * Browsers without size-adjust (Safari < 16.4) ignore the whole
+ * descriptor set and fall through to the plain local font, which is
+ * simply the old behaviour.
+ */
+@font-face {
+    font-family        : "Fraunces fallback";
+    src                : local("Georgia"), local("Times New Roman"), local("Times");
+    size-adjust        : 104.06%;
+    ascent-override    : 94.18%;
+    descent-override   : 24.99%;
+    line-gap-override  : 0%;
+}
+
+@font-face {
+    font-family        : "Libre Franklin fallback";
+    src                : local("Arial"), local("Helvetica Neue"), local("Helvetica");
+    size-adjust        : 103.45%;
+    ascent-override    : 93.77%;
+    descent-override   : 24.17%;
+    line-gap-override  : 0%;
+}
+
+/* Same idea, tuned for the masthead instead of body copy. Fraunces at
+ * 19px is 104% of Georgia; by 95px the opsz axis has narrowed it to 85%
+ * and it stays there. The body face above would leave the largest words
+ * on the page a fifth too wide, so display text gets its own ratio.
+ * Applied only from 900px up, which is where the masthead clamp has
+ * left its 4.4rem floor and the size is safely in that flat region.
+ */
+@font-face {
+    font-family        : "Fraunces display fallback";
+    src                : local("Georgia"), local("Times New Roman"), local("Times");
+    size-adjust        : 85.50%;
+    ascent-override    : 114.62%;
+    descent-override   : 30.41%;
+    line-gap-override  : 0%;
+}
+
 :root {
     /* Libre Franklin is Franklin Gothic - the American editorial sans,
      * which is where all the tracked uppercase labels live.
      * Fraunces carries an opsz axis (9..144), so one variable file gives
      * a high-contrast cut at display sizes and a sturdier one at 19px.
-     * Fallbacks are picked for metric proximity to soften the FOUT.
+     * The "* fallback" faces above stand in until the webfonts arrive;
+     * the plain names after them cover browsers that skip size-adjust.
      */
-    --font-1    : "Libre Franklin", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-2    : "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --font-1    : "Libre Franklin", "Libre Franklin fallback", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-2    : "Fraunces", "Fraunces fallback", "Iowan Old Style", Georgia, "Times New Roman", serif;
 
     /* monospace
     */
@@ -3308,6 +3374,16 @@ img.u-pull-left {
     letter-spacing : -0.025em;
     color          : var(--color-text-dark);
     margin         : 0 0 var(--vspace-0_75);
+}
+
+/* Display-tuned fallback, see the @font-face notes at the top of the
+ * file. Below 900px the clamp is at its floor and the body ratio is the
+ * closer of the two, so this is deliberately not applied there.
+ */
+@media screen and (min-width: 900px) {
+    .s-intro__name {
+        font-family : "Fraunces", "Fraunces display fallback", Georgia, "Times New Roman", serif;
+    }
 }
 
 .s-intro__standfirst {
