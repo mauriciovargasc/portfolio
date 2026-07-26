@@ -150,6 +150,41 @@
     --color-gray-1                 : #f3f5f5;
     --color-white                  : #ffffff;
 
+    /* ---------------------------------------------------------------
+     * semantic surface layer
+     *
+     * Every colour that used to be hardcoded in a rule now resolves
+     * through one of these. Values here are still the original theme,
+     * so this layer is a no-op until the palette is swapped — at which
+     * point re-pointing these is enough to retheme the whole site and
+     * to define a dark mode.
+     * --------------------------------------------------------------- */
+
+    /* surfaces */
+    --color-paper                  : #CFE6E8;
+    --color-paper-raised           : var(--color-white);
+
+    /* ink */
+    --color-ink-deepest            : #000000;
+
+    /* foreground on top of a dark scrim or accent — does NOT invert */
+    --color-on-scrim               : var(--color-white);
+    --color-on-accent              : var(--color-white);
+
+    /* scrims and rules */
+    --color-scrim                  : rgba(0, 0, 0, 0.5);
+    --color-scrim-solid            : #000000;
+    --color-rule-strong            : rgba(0, 0, 0, 0.3);
+    --color-rule-soft              : var(--color-gray-10);
+    --shadow-ink                   : rgba(0, 0, 0, 0.01);
+
+    /* Muted foregrounds. These pick a value from the middle of the gray
+     * ramp, so a mirrored ramp would land them on the wrong side — they
+     * get their own overrides in dark mode rather than following it.
+     */
+    --color-text-muted             : var(--color-gray-8);
+    --color-text-faint             : var(--color-gray-14);
+
     /* text
      */
     --color-text                   : var(--color-gray-17);
@@ -174,15 +209,20 @@
 
     /* preloader
      */
-    --color-preloader-bg           : #CFE6E8;
+    --color-preloader-bg           : var(--color-paper);
     --color-loader                 : var(--color-text-dark);
     --color-loader-light           : var(--color-1-lighter);
 
     /* others
      */
-    --color-body                   : #CFE6E8;
+    --color-body                   : var(--color-paper);
     --color-border                 : rgba(0, 0, 0, .08);
     --border-radius                : 3px;
+
+    /* vendor.css declares --swiper-theme-color on :root and loads
+     * first, so this redeclaration wins.
+     */
+    --swiper-theme-color           : var(--color-1);
 }
 
 /* ------------------------------------------------------------------- 
@@ -1985,8 +2025,8 @@ select {
 }
 
 .ss-custom-select::after {
-    border-bottom    : 1px solid #141414;
-    border-right     : 1px solid #141414;
+    border-bottom    : 1px solid var(--color-text-dark);
+    border-right     : 1px solid var(--color-text-dark);
     content          : '';
     display          : block;
     height           : 8px;
@@ -2380,7 +2420,7 @@ td:last-child {
 .pgn__prev:hover svg path,
 .pgn__next:focus svg path,
 .pgn__next:hover svg path {
-    fill : white;
+    fill : var(--color-on-accent);
 }
 
 .pgn__prev {
@@ -2807,7 +2847,7 @@ img.u-pull-left {
 .swiper .swiper-pagination-bullet {
     width      : 6px;
     height     : 6px;
-    background : rgba(0, 0, 0, 0.3);
+    background : var(--color-rule-strong);
     opacity    : 1;
 }
 
@@ -2894,9 +2934,9 @@ img.u-pull-left {
  *
  * ------------------------------------------------------------------- */
 .s-header {
-    --box-shadow: 0 1px 1px rgba(0, 0, 0, 0.01),
-                  0 2px 2px rgba(0, 0, 0, 0.01),
-                  0 6px 6px rgba(0, 0, 0, 0.01);
+    --box-shadow: 0 1px 1px var(--shadow-ink),
+                  0 2px 2px var(--shadow-ink),
+                  0 6px 6px var(--shadow-ink);
 
     z-index          : 100;
     display          : flex;
@@ -3069,7 +3109,7 @@ img.u-pull-left {
 /* is clicked 
  */
 .s-header__menu-toggle.is-clicked span {
-    background-color : rgba(255, 255, 255, 0);
+    background-color : transparent;
 }
 
 .s-header__menu-toggle.is-clicked span::before,
@@ -3240,7 +3280,7 @@ img.u-pull-left {
     line-height    : 1.0998;
     letter-spacing : -.01em;
     margin-top     : 0;
-    color          : rgb(0, 0, 0);
+    color          : var(--color-ink-deepest);
 }
 
 .s-intro__text h3 span {
@@ -3254,7 +3294,7 @@ img.u-pull-left {
     letter-spacing   : -0.015em;
     margin-top       : calc(var(--text-huge-size) / 2 * -1.2);
     margin-bottom    : var(--vspace-1_25);
-    color            : rgb(0, 0, 0);
+    color            : var(--color-ink-deepest);
 }
 
 /* --------------------------------------------------------------------
@@ -3281,7 +3321,7 @@ img.u-pull-left {
     bottom         : 0;
     width          : 100%;
     height         : 100%;
-    background     : linear-gradient(180deg, black 5%, rgba(0, 0, 0, 0) 100%);
+    background     : linear-gradient(180deg, var(--color-scrim-solid) 5%, transparent 100%);
     pointer-events : none;
     opacity        : .12;
 }
@@ -3650,7 +3690,7 @@ img.u-pull-left {
 .s-works {
     padding-top      : calc(6 * var(--space));
     padding-bottom   : calc(5.5 * var(--space));
-    background-color : white;
+    background-color : var(--color-paper-raised);
 }
 
 /* ------------------------------------------------------------------- 
@@ -3690,7 +3730,7 @@ img.u-pull-left {
     z-index          : 1;
     content          : "";
     display          : block;
-    background-color : rgba(0, 0, 0, 0.5);
+    background-color : var(--color-scrim);
     opacity          : 0;
     visibility       : hidden;
     position         : absolute;
@@ -3710,7 +3750,7 @@ img.u-pull-left {
     font-family : var(--font-1);
     font-weight : 300;
     font-size   : 3rem;
-    color       : white;
+    color       : var(--color-on-scrim);
     display     : block;
     height      : 3.2rem;
     width       : 3.2rem;
@@ -3762,7 +3802,7 @@ img.u-pull-left {
     font-size     : var(--text-sm);
     line-height   : 1.5;
     margin-bottom : 0.2rem;
-    color         : var(--color-gray-8);
+    color         : var(--color-text-muted);
 }
 
 .folio-item__meta .project-link {
@@ -3806,7 +3846,7 @@ img.u-pull-left {
 }
 
 .testimonial-slider__slide {
-    background-color : white;
+    background-color : var(--color-paper-raised);
     text-align       : center;
     width            : 100%;
     position         : relative;
@@ -3860,7 +3900,7 @@ img.u-pull-left {
     font-size   : var(--text-sm);
     font-weight : 400;
     line-height : var(--vspace-0_5);
-    color       : var(--color-gray-8);
+    color       : var(--color-text-muted);
 }
 
 .testimonial-slider__next,
@@ -3903,7 +3943,7 @@ img.u-pull-left {
 }
 
 .swiper-button-disabled svg path {
-    fill : var(--color-gray-8);
+    fill : var(--color-text-muted);
 }
 
 /* ------------------------------------------------------------------- 
@@ -4061,7 +4101,7 @@ img.u-pull-left {
     padding-top : var(--vspace-1_25);
     font-size   : var(--text-sm);
     line-height : var(--vspace-0_75);
-    color       : var(--color-gray-14);
+    color       : var(--color-text-faint);
 }
 
 .s-footer__bottom a {
@@ -4079,7 +4119,7 @@ img.u-pull-left {
     content : "|";
     display : inline-block;
     padding : 0 .8rem 0 1rem;
-    color   : var(--color-gray-10);
+    color   : var(--color-rule-soft);
 }
 
 .ss-copyright span:last-child::after {
@@ -4120,7 +4160,7 @@ img.u-pull-left {
 }
 
 .ss-go-top svg path {
-    fill : white;
+    fill : var(--color-on-accent);
 }
 
 .ss-go-top.link-is-visible {
