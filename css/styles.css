@@ -3334,15 +3334,13 @@ img.u-pull-left {
  * caption set like a figure reference.
  * -------------------------------------------------------------------- */
 .s-intro__plate {
-    /* full bleed: break out of the centred .row and span the viewport.
-     * .s-pagewrap has overflow:hidden, so 100vw cannot introduce a
-     * horizontal scrollbar when a vertical one is present.
+    /* A portrait photograph shown whole. Constrained rather than full
+     * bleed: at 3:4, spanning the viewport would make it absurdly tall.
      */
-    width        : 100vw;
-    margin-left  : calc(50% - 50vw);
-    margin-right : calc(50% - 50vw);
-    margin-top   : var(--vspace-0_5);
-    position     : relative;
+    width      : 100%;
+    max-width  : 68rem;
+    margin     : var(--vspace-1) auto 0;
+    position   : relative;
 }
 
 .s-intro__plate picture {
@@ -3352,25 +3350,21 @@ img.u-pull-left {
 .s-intro__plate img {
     display          : block;
     width            : 100%;
-    aspect-ratio     : 2 / 1;
-    object-fit       : cover;
-    /* the source is a portrait photograph cropped to a banner, so bias
-     * the crop upward to keep the subject in frame */
-    object-position  : center 30%;
+    /* height follows the intrinsic ratio from the width/height
+     * attributes, so the whole frame is shown and nothing is cropped */
+    height           : auto;
     background-color : var(--color-gray-4);
+    border           : 1px solid var(--color-rule-strong);
     filter           : saturate(.86) contrast(1.03) sepia(.05);
     margin-bottom    : 0;
 }
 
-/* the caption returns to the content column rather than the full bleed */
 .s-intro__plate figcaption {
     display         : flex;
     flex-wrap       : wrap;
     justify-content : space-between;
     gap             : var(--vspace-0_25) var(--vspace-1);
-    width           : 92%;
-    max-width       : var(--width-max);
-    margin          : var(--vspace-0_5) auto 0;
+    margin          : var(--vspace-0_5) 0 0;
     font-family     : var(--font-1);
     font-size       : var(--text-xs);
     font-weight     : 400;
@@ -3389,10 +3383,6 @@ img.u-pull-left {
 }
 
 @media screen and (max-width: 700px) {
-    .s-intro__plate img {
-        aspect-ratio : 4 / 3;
-    }
-
     .s-intro__plate figcaption {
         flex-direction : column;
     }
