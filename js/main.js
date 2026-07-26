@@ -120,6 +120,28 @@
 
 
 
+   /* theme toggle
+    *
+    * The theme itself is applied by an inline script in <head> so it is
+    * set before first paint. This only wires the button to that API.
+    * ---------------------------------------------------- */
+    const ssThemeToggle = function() {
+
+        const btn = document.querySelector('.theme-toggle');
+        if (!btn || !window.__ssTheme) return;
+
+        btn.setAttribute('aria-pressed', String(window.__ssTheme.current() === 'dark'));
+
+        btn.addEventListener('click', function() {
+            window.__ssTheme.set(
+                window.__ssTheme.current() === 'dark' ? 'light' : 'dark'
+            );
+        });
+
+    }; // end ssThemeToggle
+
+
+
    /* mobile menu
     * ---------------------------------------------------- */
     const ssMobileMenu = function() {
@@ -376,6 +398,7 @@
     * ------------------------------------------------------ */
     (function ssInit() {
 
+        ssThemeToggle();
         ssPreloader();
         ssMobileMenu();
         ssScrollState();

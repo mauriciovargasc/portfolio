@@ -150,6 +150,22 @@
                     </p>
                 </div>
 
+                <!-- Lives in __block, not __social: below 900px the social
+                     list sits inside __nav-wrap, which is scaleY(0) and
+                     visibility:hidden until the hamburger is opened, so a
+                     toggle there would be unreachable on mobile. -->
+                <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark mode">
+                    <svg class="theme-toggle__sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="4.4"/>
+                        <g stroke-width="1.7" stroke-linecap="round">
+                            <path d="M12 2.2v2.6M12 19.2v2.6M2.2 12h2.6M19.2 12h2.6M5.1 5.1l1.9 1.9M17 17l1.9 1.9M18.9 5.1L17 7M7 17l-1.9 1.9"/>
+                        </g>
+                    </svg>
+                    <svg class="theme-toggle__moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                        <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+                    </svg>
+                </button>
+
                 <a class="s-header__menu-toggle" href="#0"><span>Menu</span></a>
             </div> <!-- end s-header__block -->
 
