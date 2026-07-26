@@ -31,7 +31,7 @@
         opacity: [0, 1]
     })
     .add({
-        targets: '.s-intro__bg',
+        targets: '.s-intro__plate',
         opacity: [0, 1],
         duration: 1000,
     })
