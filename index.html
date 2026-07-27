@@ -260,11 +260,15 @@
 
             <div class="s-about__block s-about__intro">
 
-                <div class="row">
+                <!-- Scroll-reveal, not animate-on-load: this block is
+                     below the fold at every viewport, so putting it on
+                     the load timeline only stretched that timeline past
+                     the preloader's fade without anyone seeing it. -->
+                <div class="row" data-animate-block>
                     <div class="column lg-12">
-                        <h2 class="text-pretitle animate-on-load">About Me</h2>
-    
-                        <p class="attention-getter drop-cap animate-on-load">
+                        <h2 class="text-pretitle" data-animate-el>About Me</h2>
+
+                        <p class="attention-getter drop-cap" data-animate-el>
                             Hello! I'm Mauricio Vargas, a Procurement Analyst at SNH Strategic Partners, where I build LLM-powered document processing pipelines and an MCP (Model Context Protocol) server that lets stakeholders across a multi-entity private equity portfolio query contract data conversationally through Claude.
                             With a B.S. in Business Analytics and a minor in Logic & Computation from Carnegie Mellon University, plus hands-on experience in BI, financial analysis, and economic research, I bridge data, automation, and strategy.
                             I've been getting more into AI engineering lately, building agentic workflows and generative AI extraction tools alongside my Python, SQL, and Power BI work to turn data into decisions.
