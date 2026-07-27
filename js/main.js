@@ -31,27 +31,54 @@
      * the group, after the name - which is the right reading order for
      * a masthead anyway.
      *
-     * Retimed from 4.6s to ~1.5s. A 400ms stagger over six elements
-     * reads as content trickling in rather than a page arriving, and
-     * easeOut suits an entrance better than easeInOut.
+     * The timeline then has to fit inside the overlay's fade, which is
+     * the part that was still wrong. Measured, the old schedule was:
+     *
+     *   overlay fade   0 -> 400ms
+     *   header         0 -> 500ms
+     *   kicker       250 -> 950ms
+     *   name         360 -> 1060ms
+     *   standfirst   470 -> 1170ms
+     *   plate        580 -> 1280ms      <- 680x994, the biggest thing
+     *   (about)      690 -> 1940ms      <- below the fold, never seen
+     *
+     * so the veil was completely gone at 400ms, onto a page where the
+     * photo had not started appearing yet and would not be solid for
+     * another 0.9 seconds. The masthead arrived, then the photo landed
+     * separately, and the gap between the two is what reads as the page
+     * rendering twice.
+     *
+     * Now, against a 600ms fade:
+     *
+     *   header         0 -> 450ms
+     *   kicker       150 -> 650ms
+     *   name         210 -> 710ms
+     *   standfirst   270 -> 770ms
+     *   plate        330 -> 830ms
+     *
+     * The plate is ~90% in by the time the overlay is gone, so the
+     * whole masthead resolves as one arrival rather than two. The two
+     * About elements are off the load timeline entirely - they sit
+     * below the fold, so animating them here only stretched the
+     * schedule; they use the scroll-reveal path with everything else.
      */
     const tl = (typeof anime === 'function') ? anime.timeline( {
         easing: 'easeOutCubic',
-        duration: 700,
+        duration: 500,
         autoplay: false
     })
     .add({
         targets: '.s-header',
         translateY: [-24, 0],
         opacity: [0, 1],
-        duration: 500
+        duration: 450
     })
     .add({
         targets: '.animate-on-load',
         translateY: [24, 0],
         opacity: [0, 1],
-        delay: anime.stagger(110)
-    }, '-=250') : null;
+        delay: anime.stagger(60)
+    }, '-=300') : null;
 
 
 
@@ -86,7 +113,16 @@
             if (finished) return;
             finished = true;
 
-            window.scrollTo(0, 0);
+            /* Only force the top when the visitor did not ask for a
+             * section. html has scroll-behavior:smooth, so an
+             * unconditional scrollTo(0, 0) both animates - a visible
+             * glide the moment the overlay lifts - and drags a deep
+             * link like /#works back to the masthead. 'instant' opts
+             * out of the smooth behaviour for the case that remains.
+             */
+            if (!window.location.hash) {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }
 
             // CSS takes the overlay down from here - see .ss-loaded #preloader
             html.classList.remove('ss-preload');

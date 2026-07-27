@@ -2105,7 +2105,12 @@ img,
     width           : 100%;
     opacity         : 1;
     overflow        : hidden;
-    transition      : opacity .4s ease-out, visibility 0s linear .4s;
+    /* 0.6s, not 0.4s: the overlay has to still be dissolving while the
+     * intro is arriving, otherwise the veil clears onto a page whose
+     * largest element has not appeared yet and the photo reads as a
+     * second, separate render. See the timeline notes in main.js.
+     */
+    transition      : opacity .6s ease-out, visibility 0s linear .6s;
 }
 
 /* Teardown is driven by this class alone, never by the JS animation
@@ -2899,10 +2904,23 @@ td:last-child {
  * Declaring the start state in CSS means there is no such frame. The
  * timeline then animates from exactly where the paint already is, and
  * ssPreloader's revealIntro() clears these inline if anime ever fails.
+ *
+ * The translate has to be declared here too, not just the opacity.
+ * Opacity alone still leaves one frame at transform:none before anime
+ * applies translateY, so the element's first painted position is not
+ * the position the tween starts from. It is invisible at that moment,
+ * so it does not flash, but it does mean the element is laid out twice
+ * for no reason. These values must stay in step with the timeline in
+ * main.js: -24 for the header, +24 for the group.
  */
-.js .animate-on-load,
+.js .animate-on-load {
+    opacity   : 0;
+    transform : translateY(24px);
+}
+
 .js .s-header {
-    opacity : 0;
+    opacity   : 0;
+    transform : translateY(-24px);
 }
 
 /* ------------------------------------------------------------------- 
@@ -4349,6 +4367,22 @@ img.u-pull-left {
  * ------------------------------------------------------------------- */
 html {
     scroll-behavior : smooth;
+
+    /* Reserve the scrollbar gutter permanently.
+     *
+     * .ss-preload sets overflow:hidden while the overlay is up, which
+     * takes the scrollbar away; done() removes it at the same instant
+     * the overlay starts fading. Without this the viewport widens by
+     * the scrollbar width for the duration of the preload and then
+     * narrows again as the overlay lifts, so the header resizes, the
+     * centred column slides sideways and every paragraph re-wraps -
+     * measured at 1280 -> 1265px, a 7.5px shift of the intro plate and
+     * a 21px change in document height. That reflow happens in plain
+     * view through the half-faded overlay and is the larger half of
+     * the "renders twice" stutter. Reserving the gutter in both states
+     * means the swap changes nothing about the layout.
+     */
+    scrollbar-gutter : stable;
 }
 
 /* keep the sticky header from covering the top of an anchored section.
@@ -4414,8 +4448,15 @@ html {
 
     /* JS reveals are opacity-gated - make sure content is never
      * left invisible when the animations are suppressed.
+     *
+     * .s-header belongs in this list too. done() does reveal it on the
+     * reduced-motion path, but that is a JS guarantee for something CSS
+     * hid, and the header now carries a translate as well as an
+     * opacity, so the failure mode without this is a masthead that is
+     * both invisible and displaced.
      */
     .js [data-animate-el],
+    .js .s-header,
     .animate-on-load {
         opacity   : 1    !important;
         transform : none !important;
